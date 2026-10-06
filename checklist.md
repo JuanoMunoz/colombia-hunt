@@ -168,7 +168,7 @@
 | T39-03 | Dashboard Admin protegido | CRUD UI de Categorías (`/admin/categorias` o tab) con listado, creación, edición y eliminación | completed | `AdminCategoriesManager.tsx` permite listar, crear, editar y eliminar categorías con traducciones ES/EN y validaciones de API |
 | T39-04 | Dashboard Admin protegido | CRUD UI de Proyectos (`/admin/proyectos` o tab) con listado, edición/baja lógica | completed | `AdminProjectsManager.tsx` lista proyectos con filtro (todos, activos, baja lógica), opción para dar de baja o restaurar y ver detalle |
 | T39-05 | Dashboard Admin protegido | Verificar tipos, ESLint, Next build y cerrar memoria | completed | `pnpm exec tsc --noEmit` OK, ESLint 0 errores/warnings, `pnpm exec next build` 39/39 OK el 2026-10-06 |
-| T40-01 | Documentación refinada | Refinar `README.md` con arquitectura, características, setup y DB | pending | — |
-| T40-02 | Documentación refinada | Crear `CONTRIBUTING.md` con guía de contribución, flujo de PRs y reglas de código | pending | — |
-| T40-03 | Documentación refinada | Crear `TECH-STACK.md` con detalle exhaustivo de la pila tecnológica del proyecto | pending | — |
-| T40-04 | Documentación refinada | Verificar compilación, cerrar memoria y entregar la descripción para GitHub | pending | — |
+| T40-01 | Documentación refinada | Refinar `README.md` con arquitectura, características, setup y DB | completed | `README.md` actualizado con badges, características, enlaces a nuevas guías, tabla de endpoints y guía de setup |
+| T40-02 | Documentación refinada | Crear `CONTRIBUTING.md` con guía de contribución, flujo de PRs y reglas de código | completed | `CONTRIBUTING.md` creado con requisitos, flujo de ramas Git, estándares a11y/i18n/diseño y PRs |
+| T40-03 | Documentación refinada | Crear `TECH-STACK.md` con detalle exhaustivo de la pila tecnológica del proyecto | completed | `TECH-STACK.md` creado con tablas de Next 16, React 19, Tailwind v4, Turso, Drizzle, Better Auth, UploadThing, Markdown e i18n |
+| T40-04 | Documentación refinada | Verificar compilación, cerrar memoria y entregar la descripción para GitHub | completed | `pnpm exec tsc --noEmit` OK, `pnpm exec next build` 39/39 OK el 2026-10-06; descripción para GitHub preparada |
