@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import ProjectDetails from "../../../components/sections/ProjectDetails";
-import { getProjectById, getProjectIds } from "../../../lib/project-data";
+import { getProjectById } from "../../../lib/project-data";
 import { getSession } from "../../lib/get-session";
+
+export const dynamic = "force-dynamic";
 
 type ProjectPageProps = {
   params: Promise<{ id: string }>;
@@ -12,11 +14,6 @@ type ProjectPageProps = {
 function parseProjectId(rawId: string): number | null {
   const id = Number(rawId);
   return Number.isSafeInteger(id) && id > 0 ? id : null;
-}
-
-export async function generateStaticParams() {
-  const ids = await getProjectIds();
-  return ids.map((id) => ({ id: String(id) }));
 }
 
 export async function generateMetadata({ params }: ProjectPageProps): Promise<Metadata> {

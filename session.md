@@ -7,7 +7,7 @@
 
 ## Objetivo actual
 
-Terminar el sitemap dinÃ¡mico y robots.txt con `force-dynamic` y `lastModified` real de proyectos desde BD. â€” **Completado 2026-10-06**
+Corregido en código el 500 de `/proyectos/[id]` causado por `DYNAMIC_SERVER_USAGE`; falta desplegar y comprobar la ruta en Vercel. No inspeccionar `.ENV`.
 
 
 ## Contexto
@@ -20,6 +20,7 @@ Terminar el sitemap dinÃ¡mico y robots.txt con `force-dynamic` y `lastModified
 
 | Fecha | QuÃ© se hizo | Archivos tocados | VerificaciÃ³n |
 |-------|-------------|------------------|--------------|
+| 2026-10-06 | Corregida la ruta de detalle para evitar `DYNAMIC_SERVER_USAGE` en producción | `app/proyectos/[id]/page.tsx:4-20`, `checklist.md`, `session.md` | Log runtime de Vercel confirmó `DYNAMIC_SERVER_USAGE` al combinar renderizado estático con `getSession()`/`headers()` y `searchParams`. Se declaró `dynamic = "force-dynamic"` y se retiró `generateStaticParams`, pues el detalle depende de sesión y datos por petición. `pnpm exec eslint 'app/proyectos/[id]/page.tsx'` y `pnpm exec next build` (37/37) OK; SSR local: `/proyectos/2` = 200, ID no existente/inválido = 404. Falta despliegue para verificar Vercel. `.ENV` no inspeccionado. |
 | 2026-10-06 | T41: Sitemap dinÃ¡mico + robots.txt con dominio `colombiahunt.co` | `app/sitemap.ts:1`, `app/robots.ts:1`, `app/layout.tsx:30,46`, `app/page.tsx:35,43`, `app/sobre-nosotros/page.tsx:29`, `app/contribuir/page.tsx:84`, `app/categorias/[id]/page.tsx:56,83,91`, `app/proyectos/[id]/page.tsx:61,83`, `checklist.md`, `session.md` | `sitemap.ts` genera rutas estÃ¡ticas + slugs de ciudad + IDs de categorÃ­a + IDs de proyectos activos. `robots.ts` bloquea `/admin`. Grep `colombiahunt\.com` en `app/**/*.ts(x)` = 0 resultados. `pnpm exec tsc --noEmit` OK, ESLint 0 errores en los 5 archivos modificados. Build falla por timeout de Turso (bloqueador de entorno, no de cÃ³digo) igual que en T39/T40. |
 | 2026-10-06 | DocumentaciÃ³n refinada: README.md, CONTRIBUTING.md, TECH-STACK.md y descripciÃ³n para GitHub | `README.md:1`, `CONTRIBUTING.md:1`, `TECH-STACK.md:1`, `checklist.md`, `session.md` | `README.md` reestructurado con badges, caracterÃ­sticas, estructura del proyecto, guÃ­a de desarrollo y tabla de API; `CONTRIBUTING.md` con flujo Git, buenas prÃ¡cticas e i18n; `TECH-STACK.md` con resumen tÃ©cnico completo; `pnpm exec tsc --noEmit` y `pnpm exec next build` (39/39) OK el 2026-10-06. |
 | 2026-10-06 | Dashboard Admin protegido con Sidebar y CRUDs de Ciudades, CategorÃ­as y Proyectos | `app/admin/layout.tsx:1`, `app/admin/page.tsx:1`, `app/admin/ciudades/page.tsx:1`, `app/admin/categorias/page.tsx:1`, `app/admin/proyectos/page.tsx:1`, `components/layout/AdminSidebar.tsx:1`, `components/sections/AdminCitiesManager.tsx:1`, `components/sections/AdminCategoriesManager.tsx:1`, `components/sections/AdminProjectsManager.tsx:1`, `app/api/admin/projects/route.ts:1`, `app/api/projects/[id]/route.ts:62`, `app/api/profile/route.ts:93`, `components/layout/Navbar.tsx:44`, `design.md:77`, `checklist.md`, `session.md` | `app/admin/layout.tsx` protege el acceso exclusivamente para administradores autenticados (`profiles.role === 'admin'`); redirecciona a `/iniciar-sesion` o muestra 403. `AdminSidebar` provee navegaciÃ³n responsive a `/admin/ciudades`, `/admin/categorias` y `/admin/proyectos`. `AdminCitiesManager` y `AdminCategoriesManager` permiten listar, crear, editar y eliminar registros con traducciones ES/EN. `AdminProjectsManager` permite supervisar y aplicar baja lÃ³gica/restauraciÃ³n. `pnpm exec tsc --noEmit` OK, ESLint 0 errores/advertencias, `pnpm exec next build` 39/39 OK el 2026-10-06. |
@@ -60,6 +61,7 @@ Terminar el sitemap dinÃ¡mico y robots.txt con `force-dynamic` y `lastModified
 
 ## Decisiones
 
+- T43: el error de Vercel `DYNAMIC_SERVER_USAGE` confirma que la página de detalle usa APIs de petición (sesión/headers y `searchParams`); declararla `force-dynamic` es correcto para esta vista personalizada y evita intentar prerenderizarla.
 - T38: retirar categorÃ­as estÃ¡ticas del hero; los filtros y el carrusel muestran Ãºnicamente el catÃ¡logo del backend mÃ¡s el filtro local "Todos". Los controles usan desplazamiento inmediato con `scroll-snap` y conservan el gesto horizontal tÃ¡ctil.
 - T37: reutilizar los tokens existentes; en tarjetas el botÃ³n de compartir se ubica como elemento hermano del enlace de imagen para evitar anidar controles interactivos. Usar Web Share API cuando estÃ© disponible y copiar el enlace como fallback con feedback accesible ES/EN.
 - `AGENTS.md` (mayÃºsculas) es el archivo canÃ³nico â€”en Windows `agents.md` colisiona con Ã©l, por eso no se crea duplicado en minÃºsculas.
@@ -98,6 +100,7 @@ Terminar el sitemap dinÃ¡mico y robots.txt con `force-dynamic` y `lastModified
 
 ## Bloqueadores
 
+- T43: el cambio está validado localmente, pero Vercel aún debe desplegarlo para confirmar que `/proyectos/2` ya no devuelve 500.
 - La validaciÃ³n final de T37/T38 quedÃ³ bloqueada por el import faltante `../../lib/require-admin` en `app/api/admin/projects/route.ts`, agregado fuera de este alcance; el typecheck tambiÃ©n recoge las rutas admin nuevas. No se modificÃ³ ese archivo ajeno.
 - `pnpm db:seed` ya se ejecutÃ³ y reejecutÃ³ correctamente; no hay bloqueador pendiente de DB en esta task.
 - La API no ofrece endpoint de asignaciÃ³n/cambio de roles por requisito. El primer admin debe ser aprovisionado manualmente por una persona autorizada en la base de datos.
@@ -113,6 +116,6 @@ Terminar el sitemap dinÃ¡mico y robots.txt con `force-dynamic` y `lastModified
 
 ## Siguiente paso
 
+- Desplegar el cambio T43 y verificar en Vercel `/proyectos/2` (200) y un ID inexistente (404).
 - Cuando se resuelva el import de admin, volver a ejecutar `pnpm exec tsc --noEmit` y `pnpm exec next build` para cerrar la validaciÃ³n global de T37/T38.
 - Con una cuenta de prueba autorizada, revisar `/perfil` y `/proyectos/nuevo` en mÃ³vil y ambos temas, y validar creaciÃ³n/persistencia y una subida real; no usar cuentas reales ni leer sus credenciales.
-
