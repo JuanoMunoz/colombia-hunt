@@ -32,7 +32,7 @@ const websiteJsonLd = {
   "@context": "https://schema.org",
   "@type": "WebSite",
   name: "Colombia Hunt",
-  url: "https://colombiahunt.com",
+  url: "https://colombiahunt.co",
   inLanguage: "es",
   description:
     "El directorio de proyectos tecnológicos hechos en Colombia: software, startups, herramientas y aplicaciones creadas por talento colombiano.",
@@ -40,7 +40,7 @@ const websiteJsonLd = {
     "@type": "SearchAction",
     target: {
       "@type": "EntryPoint",
-      urlTemplate: "https://colombiahunt.com/?q={search_term_string}",
+      urlTemplate: "https://colombiahunt.co/?q={search_term_string}",
     },
     "query-input": "required name=search_term_string",
   },

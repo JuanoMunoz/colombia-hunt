@@ -242,3 +242,13 @@ export async function getProjectIds(): Promise<number[]> {
         .where(eq(projects.deleted, false));
     return rows.map(({ id }) => id);
 }
+
+export async function getProjectsForSitemap(): Promise<
+    { id: number; updatedAt: Date | null }[]
+> {
+    const rows = await db
+        .select({ id: projects.id, updatedAt: projects.updatedAt })
+        .from(projects)
+        .where(eq(projects.deleted, false));
+    return rows;
+}

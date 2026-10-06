@@ -53,7 +53,7 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
             description,
             type: "website",
         },
-        alternates: { canonical: `https://colombiahunt.com/categorias/${category.id}` },
+        alternates: { canonical: `https://colombiahunt.co/categorias/${category.id}` },
     };
 }
 
@@ -80,7 +80,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
         name: `${name} en Colombia — Proyectos tecnológicos`,
         description,
         inLanguage: "es",
-        url: `https://colombiahunt.com/categorias/${category.id}`,
+        url: `https://colombiahunt.co/categorias/${category.id}`,
         mainEntity: {
             "@type": "ItemList",
             numberOfItems: initialPage.items.length,
@@ -88,7 +88,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
                 "@type": "ListItem",
                 position: index + 1,
                 name: project.title,
-                url: `https://colombiahunt.com/proyectos/${project.id}`,
+                url: `https://colombiahunt.co/proyectos/${project.id}`,
             })),
         },
     };

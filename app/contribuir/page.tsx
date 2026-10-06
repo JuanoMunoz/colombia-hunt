@@ -81,7 +81,7 @@ const pageJsonLd = {
   description:
     "Publica tu proyecto tecnológico en Colombia Hunt de forma gratuita y llega a miles de desarrolladores.",
   inLanguage: "es",
-  url: "https://colombiahunt.com/contribuir",
+  url: "https://colombiahunt.co/contribuir",
 };
 
 export default function ContribuirPage() {

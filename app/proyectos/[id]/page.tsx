@@ -58,7 +58,7 @@ export async function generateMetadata({ params }: ProjectPageProps): Promise<Me
       title: `${project.title} — Colombia Hunt`,
       description,
     },
-    alternates: { canonical: `https://colombiahunt.com/proyectos/${project.id}` },
+    alternates: { canonical: `https://colombiahunt.co/proyectos/${project.id}` },
   };
 }
 
@@ -80,7 +80,7 @@ export default async function ProjectPage({ params, searchParams }: ProjectPageP
     name: project.title,
     description: project.description,
     inLanguage: "es",
-    url: `https://colombiahunt.com/proyectos/${project.id}`,
+    url: `https://colombiahunt.co/proyectos/${project.id}`,
     ...(project.imageUrl ? { image: project.imageUrl } : {}),
     ...(project.pageUrl ? { sameAs: project.pageUrl } : {}),
     applicationCategory: project.categories[0]?.name ?? "SoftwareApplication",

@@ -27,7 +27,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://colombiahunt.com"),
+  metadataBase: new URL("https://colombiahunt.co"),
   title: {
     default: "Colombia Hunt — Proyectos tecnológicos de Colombia",
     template: "%s | Colombia Hunt",
@@ -43,7 +43,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
   },
   alternates: {
-    canonical: "https://colombiahunt.com",
+    canonical: "https://colombiahunt.co",
   },
 };
 

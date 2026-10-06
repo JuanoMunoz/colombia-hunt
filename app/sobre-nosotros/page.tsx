@@ -26,7 +26,7 @@ const jsonLd = {
   description:
     "Colombia Hunt es una iniciativa para mostrar el talento tecnológico colombiano y dar visibilidad a los proyectos de software y tecnología del país.",
   inLanguage: "es",
-  url: "https://colombiahunt.com/sobre-nosotros",
+  url: "https://colombiahunt.co/sobre-nosotros",
 };
 
 export default function SobreNosotrosPage() {

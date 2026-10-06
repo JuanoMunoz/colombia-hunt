@@ -6,9 +6,16 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
-        disallow: ["/api/", "/perfil", "/proyectos/nuevo", "/iniciar-sesion", "/registrarse"],
+        disallow: [
+          "/api/",
+          "/admin",
+          "/perfil",
+          "/proyectos/nuevo",
+          "/iniciar-sesion",
+          "/registrarse",
+        ],
       },
     ],
-    sitemap: "https://colombiahunt.com/sitemap.xml",
+    sitemap: "https://colombiahunt.co/sitemap.xml",
   };
 }
