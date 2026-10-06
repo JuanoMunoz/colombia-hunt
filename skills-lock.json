@@ -1,0 +1,41 @@
+{
+  "version": 1,
+  "skills": {
+    "antislop-ui": {
+      "source": "miqdadbadjuber/anti-slop",
+      "sourceType": "github",
+      "skillPath": "skills/antislop-ui/SKILL.md",
+      "computedHash": "12c2cd7d1d5fbae9210410eb16230332747e9414fc06129200ac13ee174909b6"
+    },
+    "laws-of-ux": {
+      "source": "rolemodel/rolemodel-skills",
+      "sourceType": "github",
+      "skillPath": "skills/laws-of-ux/SKILL.md",
+      "computedHash": "7acbc660cfa38230c1ae934dd6641b5f22c1427cbbf44db4801e27b6736510db"
+    },
+    "marketing-psychology": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "skillPath": "skills/marketing-psychology/SKILL.md",
+      "computedHash": "d057044710ce7b7f9b90b84b3ab64e9359aaf47982b922ec10daca3822185ede"
+    },
+    "seo-audit": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "skillPath": "skills/seo-audit/SKILL.md",
+      "computedHash": "71435fbaf3622f1a6b16e20fda15f19aa8e285c9914fdeb92ac0a7612d6317bb"
+    },
+    "turso-cloud": {
+      "source": "tursodatabase/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/turso-cloud/SKILL.md",
+      "computedHash": "da5f8b74d48f9e2dbb23a26fc69d19e34f942ac923f9122148f8cfd90e4bdffe"
+    },
+    "uploadthing-nextjs": {
+      "source": "flohhhhh/skills",
+      "sourceType": "github",
+      "skillPath": "uploadthing-nextjs/SKILL.md",
+      "computedHash": "67fd58c0b7447459b4cd399f6f61de306725fbb80822a3fb7d2304b093d9edc9"
+    }
+  }
+}
