@@ -4,7 +4,7 @@ import localFont from "next/font/local";
 import Navbar from "../components/layout/Navbar";
 import { LanguageProvider } from "./i18n/LanguageContext";
 import "./globals.css";
-
+import { GoogleTagManager } from "@next/third-parties/google";
 const lexend = localFont({
   variable: "--font-lexend",
   display: "swap",
@@ -27,7 +27,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://colombiahunt.co"),
+  metadataBase: new URL("https://colombiahunt.com"),
   title: {
     default: "Colombia Hunt — Proyectos tecnológicos de Colombia",
     template: "%s | Colombia Hunt",
@@ -53,6 +53,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="es"
       className={`${lexend.variable} ${geistMono.variable} h-full antialiased`}
     >
+      <GoogleTagManager gtmId="G-Y42SEVXLJS"></GoogleTagManager>
       <body className="min-h-full flex flex-col">
         <LanguageProvider>
           <Navbar />

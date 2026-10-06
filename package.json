@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@libsql/client": "^0.18.0",
+    "@next/third-parties": "^16.3.8",
     "@uploadthing/react": "^7.3.3",
     "better-auth": "^1.7.7",
     "dotenv": "^18.0.5",
