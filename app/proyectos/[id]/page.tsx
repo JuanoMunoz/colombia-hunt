@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 
 type ProjectPageProps = {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ creado?: string }>;
+  searchParams: Promise<{ creado?: string; actualizado?: string }>;
 };
 
 function parseProjectId(rawId: string): number | null {
@@ -61,7 +61,7 @@ export async function generateMetadata({ params }: ProjectPageProps): Promise<Me
 
 export default async function ProjectPage({ params, searchParams }: ProjectPageProps) {
   const { id: rawId } = await params;
-  const { creado } = await searchParams;
+  const { creado, actualizado } = await searchParams;
   const id = parseProjectId(rawId);
   if (!id) notFound();
 
@@ -85,6 +85,14 @@ export default async function ProjectPage({ params, searchParams }: ProjectPageP
       "@type": "Person",
       name: project.creator.name,
     },
+    ...(project.coauthors.length > 0
+      ? {
+        contributor: project.coauthors.map((coauthor) => ({
+          "@type": "Person",
+          name: coauthor.name,
+        })),
+      }
+      : {}),
     locationCreated: {
       "@type": "City",
       name: project.city.name,
@@ -101,6 +109,7 @@ export default async function ProjectPage({ params, searchParams }: ProjectPageP
       <ProjectDetails
         project={project}
         created={creado === "1"}
+        updated={actualizado === "1"}
         hasSession={Boolean(session?.user)}
       />
     </>

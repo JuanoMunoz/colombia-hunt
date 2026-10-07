@@ -3,9 +3,14 @@ import { auth } from "../../lib/auth";
 
 const f = createUploadthing();
 
+/**
+ * Router de subida de imágenes (ver `design.md` §4).
+ * El cliente ya comprime en lossless antes de subir
+ * (`lib/images/compress.ts`); aquí se valida auth + límites.
+ */
 export const uploadRouter = {
     projectImage: f({
-        image: { maxFileSize: "4MB", maxFileCount: 1 },
+        image: { maxFileSize: "4MB", maxFileCount: 1, minFileCount: 1 },
     })
         .middleware(async ({ req }) => {
             const session = await auth.api.getSession({ headers: req.headers });
@@ -17,6 +22,7 @@ export const uploadRouter = {
         .onUploadComplete(async ({ metadata, file }) => ({
             uploadedBy: metadata.userId,
             fileKey: file.key,
+            fileSize: file.size,
         })),
 } satisfies FileRouter;
 

@@ -1,12 +1,12 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { ViewTransition } from "react";
 import { useLanguage } from "../../app/i18n/LanguageContext";
 import { getDict } from "../../app/i18n/dictionaries";
 import type { ProjectRecord } from "../../lib/project-data";
 import { SocialIcon, HeartIcon, GlobeIcon, CodeIcon } from "../ui/icons";
+import OptimizedImage from "../ui/OptimizedImage";
 import ShareProjectButton from "../ui/ShareProjectButton";
 import { useLike } from "../ui/use-like";
 import MarkdownRenderer from "../ui/MarkdownRenderer";
@@ -14,11 +14,13 @@ import MarkdownRenderer from "../ui/MarkdownRenderer";
 export default function ProjectDetails({
   project,
   created = false,
+  updated = false,
   hasSession = false,
   initialLiked = false,
 }: {
   project: ProjectRecord;
   created?: boolean;
+  updated?: boolean;
   hasSession?: boolean;
   initialLiked?: boolean;
 }) {
@@ -51,6 +53,14 @@ export default function ProjectDetails({
               className="mt-4 rounded-lg border border-(--brand)/15 bg-(--brand)/5 px-4 py-3 text-sm leading-6 text-(--foreground)"
             >
               {t.createProjectCreated}
+            </p>
+          ) : null}
+          {updated && !created ? (
+            <p
+              role="status"
+              className="mt-4 rounded-lg border border-(--brand)/15 bg-(--brand)/5 px-4 py-3 text-sm leading-6 text-(--foreground)"
+            >
+              {t.projectUpdated}
             </p>
           ) : null}
           <header className="mt-4 flex flex-col gap-2">
@@ -88,6 +98,7 @@ export default function ProjectDetails({
             </div>
             <p className="text-sm text-(--foreground)/70">
               {project.creator.name} · {project.city.name}
+              {project.extraCoauthors > 0 ? ` · ${t.projectCoauthorsMore(project.extraCoauthors)}` : ""}
             </p>
           </header>
         </div>
@@ -101,12 +112,10 @@ export default function ProjectDetails({
               share="morph"
               default="none"
             >
-              <Image
+              <OptimizedImage
                 src={project.imageUrl}
                 alt={`${project.title} en ${project.city.name}`}
-                fill
-                unoptimized
-                sizes="(max-width: 1024px) 100vw, 960px"
+                variant="detail"
                 className="object-cover"
                 priority
               />
@@ -205,6 +214,43 @@ export default function ProjectDetails({
             </Link>
           ) : null}
         </footer>
+
+        {project.coauthors.length > 0 ? (
+          <section aria-labelledby="coautores-proyecto" className="mt-8 flex flex-col gap-4">
+            <h2
+              id="coautores-proyecto"
+              className="text-xl font-semibold leading-7 text-(--foreground)"
+            >
+              {t.projectCoauthorsTitle}
+            </h2>
+            <ul role="list" className="flex flex-col gap-3">
+              {project.coauthors.map((coauthor) => (
+                <li
+                  key={coauthor.id}
+                  className="flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-(--brand)/10 pt-3 text-sm"
+                >
+                  <span className="font-medium text-(--foreground)">
+                    {coauthor.name}
+                  </span>
+                  {coauthor.profileLinks.map((profile) => (
+                    <a
+                      key={profile.label}
+                      href={profile.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title={profile.label}
+                      aria-label={`${coauthor.name} — ${profile.label}`}
+                      className="inline-flex min-h-11 items-center gap-1.5 rounded-sm font-medium text-(--brand) transition-colors hover:text-(--brand)/70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--brand)"
+                    >
+                      <SocialIcon label={profile.label} className="h-4 w-4" />
+                      <span>{profile.label}</span>
+                    </a>
+                  ))}
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : null}
       </article>
     </main>
   );

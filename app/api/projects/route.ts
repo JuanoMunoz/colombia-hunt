@@ -1,7 +1,7 @@
 import { eq, inArray } from "drizzle-orm";
 import { headers } from "next/headers";
 import { db } from "@/db";
-import { categories, cities, projectCategories, projects } from "@/db/schema";
+import { categories, cities, projectCategories, projectCoauthors, projects } from "@/db/schema";
 import { auth } from "../../lib/auth";
 import { apiError, readJson } from "../_lib/catalog";
 import { handleProjectsList } from "./list/route";
@@ -14,6 +14,18 @@ type ProjectInput = {
     imageUrl: string | null;
     pageUrl: string | null;
     livecodeUrl: string | null;
+    coauthors: CoAuthorInput[];
+};
+
+type CoAuthorInput = {
+    name: string;
+    githubUrl: string | null;
+    linkedinUrl: string | null;
+    twitterUrl: string | null;
+    instagramUrl: string | null;
+    email: string | null;
+    whatsapp: string | null;
+    showAsCreator: boolean;
 };
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -61,6 +73,75 @@ function parseImageUrl(value: unknown): string | null {
     return imageUrl;
 }
 
+function parseCoauthorEmail(value: unknown): string | null {
+    if (value === undefined || value === null || value === "") return null;
+    if (typeof value !== "string" || value.trim().length > 254) {
+        throw new TypeError("El correo del co-autor debe tener como máximo 254 caracteres.");
+    }
+    const email = value.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        throw new TypeError("El correo del co-autor debe ser válido.");
+    }
+    return email;
+}
+
+function parseCoauthorWhatsapp(value: unknown): string | null {
+    if (value === undefined || value === null || value === "") return null;
+    if (typeof value !== "string" || !/^\+?[\d\s().-]{8,20}$/.test(value.trim())) {
+        throw new TypeError("El WhatsApp del co-autor debe contener entre 8 y 15 dígitos.");
+    }
+    const digits = value.replace(/[\s()+.-]/g, "");
+    if (!/^\d{8,15}$/.test(digits)) {
+        throw new TypeError("El WhatsApp del co-autor debe contener entre 8 y 15 dígitos.");
+    }
+    return digits;
+}
+
+function parseCoauthors(value: unknown): CoAuthorInput[] {
+    if (value === undefined || value === null) return [];
+    if (!Array.isArray(value)) {
+        throw new TypeError("Los co-autores deben ser una lista.");
+    }
+    if (value.length > 5) {
+        throw new TypeError("Se admiten como máximo 5 co-autores por proyecto.");
+    }
+
+    return value.map((item) => {
+        if (!isRecord(item)) {
+            throw new TypeError("Cada co-autor debe ser un objeto con nombre y contactos.");
+        }
+        const allowedCoauthorFields = [
+            "name",
+            "githubUrl",
+            "linkedinUrl",
+            "twitterUrl",
+            "instagramUrl",
+            "email",
+            "whatsapp",
+            "showAsCreator",
+        ];
+        if (Object.keys(item).some((key) => !allowedCoauthorFields.includes(key))) {
+            throw new TypeError("El co-autor contiene campos no permitidos.");
+        }
+        if (typeof item.name !== "string" || !item.name.trim() || item.name.trim().length > 80) {
+            throw new TypeError("El nombre del co-autor es obligatorio y admite hasta 80 caracteres.");
+        }
+        if (item.showAsCreator !== undefined && typeof item.showAsCreator !== "boolean") {
+            throw new TypeError("El campo principal del co-autor debe ser verdadero o falso.");
+        }
+        return {
+            name: item.name.trim(),
+            githubUrl: parseOptionalUrl(item.githubUrl, "El GitHub del co-autor"),
+            linkedinUrl: parseOptionalUrl(item.linkedinUrl, "El LinkedIn del co-autor"),
+            twitterUrl: parseOptionalUrl(item.twitterUrl, "El X del co-autor"),
+            instagramUrl: parseOptionalUrl(item.instagramUrl, "El Instagram del co-autor"),
+            email: parseCoauthorEmail(item.email),
+            whatsapp: parseCoauthorWhatsapp(item.whatsapp),
+            showAsCreator: item.showAsCreator === true,
+        };
+    });
+}
+
 function parseProject(value: unknown): ProjectInput {
     const allowedFields = [
         "title",
@@ -70,6 +151,7 @@ function parseProject(value: unknown): ProjectInput {
         "imageUrl",
         "pageUrl",
         "livecodeUrl",
+        "coauthors",
     ];
     if (!isRecord(value) || Object.keys(value).some((key) => !allowedFields.includes(key))) {
         throw new TypeError("El cuerpo contiene campos no permitidos.");
@@ -119,6 +201,7 @@ function parseProject(value: unknown): ProjectInput {
         imageUrl: parseImageUrl(value.imageUrl),
         pageUrl: parseOptionalUrl(value.pageUrl, "El sitio web"),
         livecodeUrl: parseOptionalUrl(value.livecodeUrl, "El repositorio"),
+        coauthors: parseCoauthors(value.coauthors),
     };
 }
 
@@ -182,6 +265,22 @@ export async function POST(request: Request) {
                 categoryId,
             })),
         );
+
+        if (project.coauthors.length > 0) {
+            await tx.insert(projectCoauthors).values(
+                project.coauthors.map((coauthor) => ({
+                    projectId: created.id,
+                    name: coauthor.name,
+                    githubUrl: coauthor.githubUrl,
+                    linkedinUrl: coauthor.linkedinUrl,
+                    twitterUrl: coauthor.twitterUrl,
+                    instagramUrl: coauthor.instagramUrl,
+                    email: coauthor.email,
+                    whatsapp: coauthor.whatsapp,
+                    showAsCreator: coauthor.showAsCreator,
+                })),
+            );
+        }
         return created.id;
     });
 

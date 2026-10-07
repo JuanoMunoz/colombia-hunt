@@ -1,14 +1,15 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { getDict } from "../../app/i18n/dictionaries";
 import { useLanguage } from "../../app/i18n/LanguageContext";
-import { HttpClientError, projectApi } from "../../lib/http-client";
-import { UploadButton } from "../../lib/uploadthing";
+import { HttpClientError, projectApi, type CreateProjectCoauthorInput } from "../../lib/http-client";
+import { compressImage } from "../../lib/images/compress";
+import { useUploadThing } from "../../lib/uploadthing";
 import MarkdownEditor from "../ui/MarkdownEditor";
+import OptimizedImage from "../ui/OptimizedImage";
 
 type ProjectOption = {
     id: number;
@@ -22,6 +23,34 @@ type CreateProjectFormProps = {
 
 const inputClassName =
     "min-h-11 w-full rounded-md border border-(--brand)/25 bg-(--background) px-3 text-base text-(--foreground) placeholder:text-(--foreground)/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--brand)";
+
+const MAX_COAUTHORS = 5;
+
+type CoAuthorDraft = {
+    key: number;
+    name: string;
+    githubUrl: string;
+    linkedinUrl: string;
+    twitterUrl: string;
+    instagramUrl: string;
+    email: string;
+    whatsapp: string;
+    showAsCreator: boolean;
+};
+
+function emptyCoAuthor(key: number): CoAuthorDraft {
+    return {
+        key,
+        name: "",
+        githubUrl: "",
+        linkedinUrl: "",
+        twitterUrl: "",
+        instagramUrl: "",
+        email: "",
+        whatsapp: "",
+        showAsCreator: false,
+    };
+}
 
 export default function CreateProjectForm({
     cities,
@@ -40,6 +69,56 @@ export default function CreateProjectForm({
         kind: "idle" | "uploading" | "error";
         progress: number | null;
     }>({ kind: "idle", progress: null });
+    const [coauthors, setCoauthors] = useState<CoAuthorDraft[]>([]);
+    const [nextCoauthorKey, setNextCoauthorKey] = useState(0);
+
+    const { startUpload, isUploading } = useUploadThing("projectImage", {
+        onClientUploadComplete: (files) => {
+            const uploadedFile = files[0];
+            if (!uploadedFile?.url) {
+                setImageUpload({ kind: "error", progress: null });
+                return;
+            }
+            setImageUrl(uploadedFile.url);
+            setImageUpload({ kind: "idle", progress: null });
+        },
+        onUploadError: () => {
+            setImageUpload({ kind: "error", progress: null });
+        },
+    });
+
+    async function handleImageSelect(file: File | undefined) {
+        if (!file) {
+            return;
+        }
+        setImageUpload({ kind: "uploading", progress: 0 });
+        try {
+            // Compresión lossless en el navegador (fail-open: si falla,
+            // `compressImage` devuelve el original intacto).
+            const { file: ready } = await compressImage(file, "project");
+            await startUpload([ready]);
+        } catch {
+            setImageUpload({ kind: "error", progress: null });
+        }
+    }
+
+    function addCoauthor() {
+        if (coauthors.length >= MAX_COAUTHORS) return;
+        setCoauthors((current) => [...current, emptyCoAuthor(nextCoauthorKey)]);
+        setNextCoauthorKey((key) => key + 1);
+    }
+
+    function updateCoauthor(key: number, changes: Partial<CoAuthorDraft>) {
+        setCoauthors((current) =>
+            current.map((coauthor) =>
+                coauthor.key === key ? { ...coauthor, ...changes } : coauthor,
+            ),
+        );
+    }
+
+    function removeCoauthor(key: number) {
+        setCoauthors((current) => current.filter((coauthor) => coauthor.key !== key));
+    }
 
     async function handleSubmit(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
@@ -49,6 +128,19 @@ export default function CreateProjectForm({
             setStatus({ kind: "error", message: t.createProjectCategoryHint });
             return;
         }
+
+        const payloadCoauthors: CreateProjectCoauthorInput[] = coauthors
+            .filter((coauthor) => coauthor.name.trim().length > 0)
+            .map((coauthor) => ({
+                name: coauthor.name.trim(),
+                githubUrl: coauthor.githubUrl,
+                linkedinUrl: coauthor.linkedinUrl,
+                twitterUrl: coauthor.twitterUrl,
+                instagramUrl: coauthor.instagramUrl,
+                email: coauthor.email,
+                whatsapp: coauthor.whatsapp,
+                showAsCreator: coauthor.showAsCreator,
+            }));
 
         setStatus({ kind: "submitting", message: "" });
         try {
@@ -60,6 +152,7 @@ export default function CreateProjectForm({
                 imageUrl,
                 pageUrl: String(formData.get("pageUrl") ?? ""),
                 livecodeUrl: String(formData.get("livecodeUrl") ?? ""),
+                coauthors: payloadCoauthors,
             });
             if (!Number.isSafeInteger(result.projectId) || result.projectId < 1) {
                 throw new Error("La respuesta del servidor no incluye un identificador válido.");
@@ -78,7 +171,8 @@ export default function CreateProjectForm({
         }
     }
 
-    const pending = status.kind === "submitting" || imageUpload.kind === "uploading";
+    const pending =
+        status.kind === "submitting" || imageUpload.kind === "uploading" || isUploading;
     const isError = status.kind === "error";
 
     return (
@@ -211,40 +305,25 @@ export default function CreateProjectForm({
                         <p className="text-sm leading-6 text-(--foreground)/70">
                             {t.createProjectImageHint}
                         </p>
-                        <UploadButton
-                            endpoint="projectImage"
-                            content={{
-                                button: t.createProjectImageUpload,
-                                allowedContent: t.createProjectImageAllowed,
+                        <label
+                            htmlFor="project-image-input"
+                            className="inline-flex min-h-11 cursor-pointer items-center justify-center rounded-md bg-(--brand) px-4 text-sm font-semibold text-(--background) transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--brand)"
+                        >
+                            {t.createProjectImageUpload}
+                        </label>
+                        <input
+                            id="project-image-input"
+                            type="file"
+                            accept="image/jpeg,image/png,image/webp,image/gif"
+                            disabled={pending}
+                            onChange={(event) => {
+                                void handleImageSelect(event.target.files?.[0]);
+                                // Permite volver a elegir el mismo archivo.
+                                event.target.value = "";
                             }}
-                            appearance={{
-                                container: "flex flex-col items-start gap-2",
-                                button:
-                                    "inline-flex min-h-11 cursor-pointer items-center justify-center rounded-md bg-(--brand) px-4 text-sm font-semibold text-(--background) transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--brand) disabled:cursor-wait disabled:opacity-70",
-                                allowedContent: "text-sm text-(--foreground)/70",
-                            }}
-                            onUploadBegin={() => {
-                                setImageUpload({ kind: "uploading", progress: 0 });
-                            }}
-                            onUploadProgress={(progress) => {
-                                setImageUpload({ kind: "uploading", progress });
-                            }}
-                            onClientUploadComplete={(files) => {
-                                const uploadedFile = files[0];
-                                if (!uploadedFile?.url) {
-                                    setImageUpload({ kind: "error", progress: null });
-                                    return;
-                                }
-                                setImageUrl(uploadedFile.url);
-                                setImageUpload({ kind: "idle", progress: null });
-                            }}
-                            onUploadError={() => {
-                                setImageUpload({ kind: "error", progress: null });
-                            }}
-                            onUploadAborted={() => {
-                                setImageUpload({ kind: "idle", progress: null });
-                            }}
+                            className="sr-only"
                         />
+                        <p className="text-sm text-(--foreground)/70">{t.createProjectImageAllowed}</p>
                         {imageUpload.kind === "uploading" ? (
                             <p role="status" aria-live="polite" className="text-sm text-(--foreground)/75">
                                 {t.createProjectImageUploading}
@@ -260,12 +339,10 @@ export default function CreateProjectForm({
                         ) : null}
                         {imageUrl ? (
                             <div className="relative mt-2 aspect-video w-full max-w-xl overflow-hidden rounded-md border border-(--brand)/20">
-                                <Image
+                                <OptimizedImage
                                     src={imageUrl}
                                     alt={t.createProjectImagePreview}
-                                    fill
-                                    unoptimized
-                                    sizes="(max-width: 640px) 100vw, 576px"
+                                    variant="preview"
                                     className="object-cover"
                                 />
                             </div>
@@ -308,6 +385,153 @@ export default function CreateProjectForm({
                             className={inputClassName}
                         />
                     </div>
+
+                    <fieldset className="flex flex-col gap-4">
+                        <legend className="text-sm font-medium text-(--foreground)">
+                            {t.createProjectCoauthors}
+                        </legend>
+                        <p className="text-sm leading-6 text-(--foreground)/70">
+                            {t.createProjectCoauthorsHint}
+                        </p>
+                        {coauthors.map((coauthor, index) => (
+                            <div
+                                key={coauthor.key}
+                                className="flex flex-col gap-3 rounded-md border border-(--brand)/15 p-3"
+                            >
+                                <div className="flex flex-col gap-2">
+                                    <label
+                                        htmlFor={`coauthor-name-${coauthor.key}`}
+                                        className="text-sm font-medium text-(--foreground)"
+                                    >
+                                        {t.createProjectCoauthorName}
+                                    </label>
+                                    <input
+                                        id={`coauthor-name-${coauthor.key}`}
+                                        type="text"
+                                        autoComplete="off"
+                                        maxLength={80}
+                                        value={coauthor.name}
+                                        onChange={(event) =>
+                                            updateCoauthor(coauthor.key, { name: event.target.value })
+                                        }
+                                        placeholder={`Co-autor ${index + 1}`}
+                                        className={inputClassName}
+                                    />
+                                </div>
+                                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                                    <input
+                                        type="url"
+                                        inputMode="url"
+                                        maxLength={2048}
+                                        value={coauthor.githubUrl}
+                                        onChange={(event) =>
+                                            updateCoauthor(coauthor.key, { githubUrl: event.target.value })
+                                        }
+                                        placeholder="https://github.com/"
+                                        aria-label="GitHub"
+                                        className={inputClassName}
+                                    />
+                                    <input
+                                        type="url"
+                                        inputMode="url"
+                                        maxLength={2048}
+                                        value={coauthor.linkedinUrl}
+                                        onChange={(event) =>
+                                            updateCoauthor(coauthor.key, { linkedinUrl: event.target.value })
+                                        }
+                                        placeholder="https://www.linkedin.com/"
+                                        aria-label="LinkedIn"
+                                        className={inputClassName}
+                                    />
+                                    <input
+                                        type="url"
+                                        inputMode="url"
+                                        maxLength={2048}
+                                        value={coauthor.twitterUrl}
+                                        onChange={(event) =>
+                                            updateCoauthor(coauthor.key, { twitterUrl: event.target.value })
+                                        }
+                                        placeholder="https://x.com/"
+                                        aria-label="X"
+                                        className={inputClassName}
+                                    />
+                                    <input
+                                        type="url"
+                                        inputMode="url"
+                                        maxLength={2048}
+                                        value={coauthor.instagramUrl}
+                                        onChange={(event) =>
+                                            updateCoauthor(coauthor.key, { instagramUrl: event.target.value })
+                                        }
+                                        placeholder="https://instagram.com/"
+                                        aria-label="Instagram"
+                                        className={inputClassName}
+                                    />
+                                    <input
+                                        type="email"
+                                        inputMode="email"
+                                        maxLength={254}
+                                        value={coauthor.email}
+                                        onChange={(event) =>
+                                            updateCoauthor(coauthor.key, { email: event.target.value })
+                                        }
+                                        placeholder="correo@ejemplo.com"
+                                        aria-label="Email"
+                                        className={inputClassName}
+                                    />
+                                    <input
+                                        type="tel"
+                                        inputMode="tel"
+                                        maxLength={20}
+                                        value={coauthor.whatsapp}
+                                        onChange={(event) =>
+                                            updateCoauthor(coauthor.key, { whatsapp: event.target.value })
+                                        }
+                                        placeholder="573001234567"
+                                        aria-label="WhatsApp"
+                                        className={inputClassName}
+                                    />
+                                </div>
+                                <label className="flex min-h-11 cursor-pointer items-start gap-3 text-sm text-(--foreground)">
+                                    <input
+                                        type="checkbox"
+                                        checked={coauthor.showAsCreator}
+                                        onChange={(event) =>
+                                            updateCoauthor(coauthor.key, { showAsCreator: event.target.checked })
+                                        }
+                                        className="mt-1 h-5 w-5 shrink-0 accent-(--brand)"
+                                    />
+                                    <span>
+                                        <span className="font-medium">{t.createProjectCoauthorPrincipal}</span>
+                                        <span className="block text-(--foreground)/70">
+                                            {t.createProjectCoauthorPrincipalHint}
+                                        </span>
+                                    </span>
+                                </label>
+                                <div>
+                                    <button
+                                        type="button"
+                                        onClick={() => removeCoauthor(coauthor.key)}
+                                        aria-label={`${t.createProjectCoauthorRemove} ${index + 1}`}
+                                        className="inline-flex min-h-11 items-center justify-center rounded-md border border-(--brand)/25 px-4 text-sm font-semibold text-(--brand) transition-colors hover:bg-(--brand)/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--brand)"
+                                    >
+                                        {t.createProjectCoauthorRemove}
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
+                        {coauthors.length < MAX_COAUTHORS ? (
+                            <div>
+                                <button
+                                    type="button"
+                                    onClick={addCoauthor}
+                                    className="inline-flex min-h-11 items-center justify-center rounded-md border border-(--brand)/25 px-4 text-sm font-semibold text-(--brand) transition-colors hover:bg-(--brand)/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--brand)"
+                                >
+                                    {t.createProjectCoauthorAdd}
+                                </button>
+                            </div>
+                        ) : null}
+                    </fieldset>
 
                     <div className="flex flex-col items-start gap-3">
                         <button

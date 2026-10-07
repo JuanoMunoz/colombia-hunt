@@ -9,6 +9,8 @@ type EditableProfile = {
     githubUrl?: string | null;
     linkedinUrl?: string | null;
     twitterUrl?: string | null;
+    instagramUrl?: string | null;
+    email?: string | null;
     whatsapp?: string | null;
 };
 
@@ -35,7 +37,7 @@ function parseOptionalUrl(value: unknown, field: string): string | null {
 }
 
 function parseProfile(value: unknown): EditableProfile {
-    const allowedFields = ["name", "githubUrl", "linkedinUrl", "twitterUrl", "whatsapp"];
+    const allowedFields = ["name", "githubUrl", "linkedinUrl", "twitterUrl", "instagramUrl", "email", "whatsapp"];
     if (!isRecord(value) || Object.keys(value).length === 0) {
         throw new TypeError("El cuerpo debe ser un objeto JSON con campos editables.");
     }
@@ -51,8 +53,22 @@ function parseProfile(value: unknown): EditableProfile {
         profile.name = value.name.trim();
     }
 
-    for (const field of ["githubUrl", "linkedinUrl", "twitterUrl"] as const) {
+    for (const field of ["githubUrl", "linkedinUrl", "twitterUrl", "instagramUrl"] as const) {
         if (field in value) profile[field] = parseOptionalUrl(value[field], field);
+    }
+
+    if ("email" in value) {
+        if (value.email === null || value.email === "") {
+            profile.email = null;
+        } else if (
+            typeof value.email !== "string" ||
+            value.email.trim().length > 254 ||
+            !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.email.trim())
+        ) {
+            throw new TypeError("El correo debe ser válido y tener como máximo 254 caracteres.");
+        } else {
+            profile.email = value.email.trim();
+        }
     }
 
     if ("whatsapp" in value) {
@@ -94,6 +110,8 @@ export async function GET() {
             githubUrl: profiles.githubUrl,
             linkedinUrl: profiles.linkedinUrl,
             twitterUrl: profiles.twitterUrl,
+            instagramUrl: profiles.instagramUrl,
+            email: profiles.email,
             whatsapp: profiles.whatsapp,
         })
         .from(profiles)
@@ -107,6 +125,8 @@ export async function GET() {
             githubUrl: profile?.githubUrl ?? null,
             linkedinUrl: profile?.linkedinUrl ?? null,
             twitterUrl: profile?.twitterUrl ?? null,
+            instagramUrl: profile?.instagramUrl ?? null,
+            email: profile?.email ?? null,
             whatsapp: profile?.whatsapp ?? null,
         },
     });
@@ -137,6 +157,8 @@ export async function PATCH(request: Request) {
         ...(changes.githubUrl !== undefined ? { githubUrl: changes.githubUrl } : {}),
         ...(changes.linkedinUrl !== undefined ? { linkedinUrl: changes.linkedinUrl } : {}),
         ...(changes.twitterUrl !== undefined ? { twitterUrl: changes.twitterUrl } : {}),
+        ...(changes.instagramUrl !== undefined ? { instagramUrl: changes.instagramUrl } : {}),
+        ...(changes.email !== undefined ? { email: changes.email } : {}),
         ...(changes.whatsapp !== undefined ? { whatsapp: changes.whatsapp } : {}),
     };
 
@@ -164,6 +186,8 @@ export async function PATCH(request: Request) {
             githubUrl: profiles.githubUrl,
             linkedinUrl: profiles.linkedinUrl,
             twitterUrl: profiles.twitterUrl,
+            instagramUrl: profiles.instagramUrl,
+            email: profiles.email,
             whatsapp: profiles.whatsapp,
         })
         .from(profiles)

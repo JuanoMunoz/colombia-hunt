@@ -6,12 +6,21 @@ import { useLanguage } from "../../app/i18n/LanguageContext";
 import { getDict } from "../../app/i18n/dictionaries";
 import { HttpClientError, profileApi } from "../../lib/http-client";
 
+type OwnSummary = {
+    id: number;
+    title: string;
+};
+
 type ProfileFormProps = {
     name: string;
     githubUrl: string;
     linkedinUrl: string;
     twitterUrl: string;
+    instagramUrl: string;
+    email: string;
     whatsapp: string;
+    ownTotal?: number;
+    ownRecent?: OwnSummary[];
 };
 
 const inputClassName =
@@ -22,7 +31,11 @@ export default function ProfileForm({
     githubUrl,
     linkedinUrl,
     twitterUrl,
+    instagramUrl,
+    email,
     whatsapp,
+    ownTotal = 0,
+    ownRecent = [],
 }: ProfileFormProps) {
     const { lang } = useLanguage();
     const t = getDict(lang);
@@ -42,6 +55,8 @@ export default function ProfileForm({
                 githubUrl: String(formData.get("githubUrl") ?? ""),
                 linkedinUrl: String(formData.get("linkedinUrl") ?? ""),
                 twitterUrl: String(formData.get("twitterUrl") ?? ""),
+                instagramUrl: String(formData.get("instagramUrl") ?? ""),
+                email: String(formData.get("email") ?? ""),
                 whatsapp: String(formData.get("whatsapp") ?? ""),
             });
             setStatus({ kind: "success", message: t.profileSaved });
@@ -96,10 +111,58 @@ export default function ProfileForm({
                         {t.profileCreateProject}
                     </Link>
                     <Link
+                        href="/mis-proyectos"
+                        className="inline-flex min-h-11 items-center justify-center rounded-md border border-(--brand)/25 px-4 text-sm font-semibold text-(--brand) transition-colors hover:bg-(--brand)/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--brand)"
+                    >
+                        {t.myProjectsManage}
+                    </Link>
+                    <Link
                         href="/explorar"
                         className="inline-flex min-h-11 items-center justify-center rounded-md border border-(--brand)/25 px-4 text-sm font-semibold text-(--brand) transition-colors hover:bg-(--brand)/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--brand)"
                     >
                         {t.profileExploreProjects}
+                    </Link>
+                </div>
+            </section>
+            <section
+                aria-labelledby="mis-proyectos-resumen"
+                className="border-b border-(--brand)/15 py-8"
+            >
+                <h2
+                    id="mis-proyectos-resumen"
+                    className="text-lg font-semibold leading-7 text-(--foreground)"
+                >
+                    {t.myProjectsTitle}
+                </h2>
+                {ownTotal === 0 ? (
+                    <p className="mt-2 max-w-2xl text-base leading-7 text-(--foreground)/75">
+                        {t.myProjectsEmpty}
+                    </p>
+                ) : (
+                    <>
+                        <p role="status" className="mt-2 text-base leading-7 text-(--foreground)/75">
+                            {t.myProjectsCount(ownTotal)}
+                        </p>
+                        <ul className="mt-3 flex flex-col gap-2">
+                            {ownRecent.map((project) => (
+                                <li key={project.id}>
+                                    <Link
+                                        href={`/proyectos/${project.id}`}
+                                        className="inline-flex min-h-11 items-center rounded-md text-sm font-semibold text-(--brand) underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--brand)"
+                                    >
+                                        {project.title}
+                                    </Link>
+                                </li>
+                            ))}
+                        </ul>
+                    </>
+                )}
+                <div className="mt-4">
+                    <Link
+                        href="/mis-proyectos"
+                        className="inline-flex min-h-11 items-center rounded-md text-sm font-semibold text-(--brand) underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--brand)"
+                    >
+                        {t.myProjectsManage} →
                     </Link>
                 </div>
             </section>
@@ -179,6 +242,37 @@ export default function ProfileForm({
                                 maxLength={2048}
                                 placeholder="https://x.com/"
                                 defaultValue={twitterUrl}
+                                className={inputClassName}
+                            />
+                        </div>
+                        <div className="flex flex-col gap-2">
+                            <label htmlFor="instagramUrl" className="text-sm font-medium text-(--foreground)">
+                                {t.profileInstagram}
+                            </label>
+                            <input
+                                id="instagramUrl"
+                                name="instagramUrl"
+                                type="url"
+                                inputMode="url"
+                                maxLength={2048}
+                                placeholder="https://instagram.com/"
+                                defaultValue={instagramUrl}
+                                className={inputClassName}
+                            />
+                        </div>
+                        <div className="flex flex-col gap-2">
+                            <label htmlFor="email" className="text-sm font-medium text-(--foreground)">
+                                {t.profileEmail}
+                            </label>
+                            <input
+                                id="email"
+                                name="email"
+                                type="email"
+                                inputMode="email"
+                                autoComplete="email"
+                                maxLength={254}
+                                placeholder="correo@ejemplo.com"
+                                defaultValue={email}
                                 className={inputClassName}
                             />
                         </div>

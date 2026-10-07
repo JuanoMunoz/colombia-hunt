@@ -10,6 +10,7 @@ export default function robots(): MetadataRoute.Robots {
           "/api/",
           "/admin",
           "/perfil",
+          "/mis-proyectos",
           "/proyectos/nuevo",
           "/iniciar-sesion",
           "/registrarse",

@@ -5,6 +5,7 @@ import ProfileForm from "../../components/sections/ProfileForm";
 import { getSession } from "../lib/get-session";
 import { db } from "@/db";
 import { profiles } from "@/db/schema";
+import { getOwnProjects } from "../../lib/project-data";
 
 export const metadata: Metadata = {
     title: "Tu perfil | Colombia Hunt",
@@ -21,6 +22,9 @@ export default async function ProfilePage() {
         .from(profiles)
         .where(eq(profiles.userId, session.user.id))
         .limit(1);
+
+    const own = await getOwnProjects(session.user.id);
+    const ownActive = own.filter((project) => !project.deleted);
 
     const pageJsonLd = {
         "@context": "https://schema.org",
@@ -41,7 +45,14 @@ export default async function ProfilePage() {
                 githubUrl={profile?.githubUrl ?? ""}
                 linkedinUrl={profile?.linkedinUrl ?? ""}
                 twitterUrl={profile?.twitterUrl ?? ""}
+                instagramUrl={profile?.instagramUrl ?? ""}
+                email={profile?.email ?? ""}
                 whatsapp={profile?.whatsapp ?? ""}
+                ownTotal={ownActive.length}
+                ownRecent={ownActive.slice(0, 3).map((project) => ({
+                    id: project.id,
+                    title: project.title,
+                }))}
             />
         </main>
     );

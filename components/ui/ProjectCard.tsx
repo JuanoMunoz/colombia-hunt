@@ -1,12 +1,12 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { ViewTransition } from "react";
 import { useLanguage } from "../../app/i18n/LanguageContext";
 import { getDict } from "../../app/i18n/dictionaries";
 import type { ProjectRecord } from "../../lib/project-data";
 import { SocialIcon, HeartIcon } from "./icons";
+import OptimizedImage from "./OptimizedImage";
 import ShareProjectButton from "./ShareProjectButton";
 import { useLike } from "./use-like";
 
@@ -47,12 +47,10 @@ export default function ProjectCard({
               share="morph"
               default="none"
             >
-              <Image
+              <OptimizedImage
                 src={project.imageUrl}
                 alt={`${project.title} en ${project.city.name}`}
-                fill
-                unoptimized
-                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                variant="card"
                 className="object-cover"
               />
             </ViewTransition>
@@ -87,6 +85,7 @@ export default function ProjectCard({
           <p className="truncate text-xs leading-4 text-(--foreground)/60">
             {project.creator.name}
             {project.city.name ? ` · ${project.city.name}` : ""}
+            {project.extraCoauthors > 0 ? ` · ${t.projectCoauthorsMore(project.extraCoauthors)}` : ""}
           </p>
 
           {project.creator.profileLinks.length > 0 && (

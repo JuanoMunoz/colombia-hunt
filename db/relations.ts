@@ -67,6 +67,10 @@ export const relations = defineRelations(schema, (r) => ({
             to: r.cities.id,
         }),
         projectCategories: r.many.projectCategories(),
+        coauthors: r.many.projectCoauthors({
+            from: r.projects.id,
+            to: r.projectCoauthors.projectId,
+        }),
         categories: r.many.categories({
             from: r.projects.id.through(r.projectCategories.projectId),
             to: r.categories.id.through(r.projectCategories.categoryId),
@@ -81,6 +85,12 @@ export const relations = defineRelations(schema, (r) => ({
         category: r.one.categories({
             from: r.projectCategories.categoryId,
             to: r.categories.id,
+        }),
+    },
+    projectCoauthors: {
+        project: r.one.projects({
+            from: r.projectCoauthors.projectId,
+            to: r.projects.id,
         }),
     },
     projectLikes: {

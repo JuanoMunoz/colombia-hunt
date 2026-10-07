@@ -83,6 +83,8 @@ export type Dict = {
   projectRepository: string;
   projectLiveDemo: string;
   projectAuthor: string;
+  projectCoauthorsTitle: string;
+  projectCoauthorsMore: (count: number) => string;
   profileTitle: string;
   profileDescription: string;
   profilePersonalInfo: string;
@@ -93,6 +95,8 @@ export type Dict = {
   profileTwitter: string;
   profileWhatsapp: string;
   profileWhatsappHint: string;
+  profileInstagram: string;
+  profileEmail: string;
   profileSave: string;
   profileSaving: string;
   profileSaved: string;
@@ -127,6 +131,45 @@ export type Dict = {
   createProjectSessionExpired: string;
   createProjectError: string;
   createProjectCreated: string;
+  createProjectCoauthors: string;
+  createProjectCoauthorsHint: string;
+  createProjectCoauthorName: string;
+  createProjectCoauthorPrincipal: string;
+  createProjectCoauthorPrincipalHint: string;
+  createProjectCoauthorAdd: string;
+  createProjectCoauthorRemove: string;
+  myProjectsTitle: string;
+  myProjectsDescription: string;
+  myProjectsManage: string;
+  myProjectsActive: string;
+  myProjectsDeletedHistory: string;
+  myProjectsEmpty: string;
+  myProjectsEmptyCta: string;
+  myProjectsEdit: string;
+  myProjectsDelete: string;
+  myProjectsDeletedBadge: string;
+  myProjectsView: string;
+  myProjectsBackToProfile: string;
+  myProjectsDeleteDialogTitle: string;
+  myProjectsDeleteCancel: string;
+  myProjectsDeleteConfirmButton: string;
+  myProjectsDeleting: string;
+  myProjectsDeleted: string;
+  myProjectsDeleteError: string;
+  myProjectsSessionExpired: string;
+  myProjectsLoadError: string;
+  myProjectsDeleteMessage: (title: string) => string;
+  myProjectsCount: (count: number) => string;
+  editProjectTitle: string;
+  editProjectDescription: string;
+  editProjectSubmit: string;
+  editProjectSubmitting: string;
+  editProjectSaved: string;
+  editProjectInvalid: string;
+  editProjectSessionExpired: string;
+  editProjectError: string;
+  editProjectBack: string;
+  projectUpdated: string;
   notFoundTitle: string;
   notFoundDescription: string;
   notFoundHome: string;
@@ -224,6 +267,8 @@ const es: Dict = {
   projectRepository: "Repositorio",
   projectLiveDemo: "Demo en vivo",
   projectAuthor: "Información del perfil",
+  projectCoauthorsTitle: "Coautores",
+  projectCoauthorsMore: (count) => (count === 1 ? "+1 persona" : `+${count} personas`),
   profileTitle: "Tu perfil",
   profileDescription: "Actualiza tu nombre y los enlaces que compartes.",
   profilePersonalInfo: "Datos personales",
@@ -234,6 +279,8 @@ const es: Dict = {
   profileTwitter: "URL de X o Twitter",
   profileWhatsapp: "WhatsApp",
   profileWhatsappHint: "Incluye el indicativo del país, solo números.",
+  profileInstagram: "URL de Instagram",
+  profileEmail: "Correo electrónico",
   profileSave: "Guardar cambios",
   profileSaving: "Guardando…",
   profileSaved: "Perfil actualizado.",
@@ -271,6 +318,48 @@ const es: Dict = {
   createProjectSessionExpired: "Tu sesión expiró. Inicia sesión y vuelve a intentarlo.",
   createProjectError: "No se pudo publicar el proyecto. Inténtalo de nuevo.",
   createProjectCreated: "Tu proyecto ya está publicado en Colombia Hunt.",
+  createProjectCoauthors: "Co-autores (opcional)",
+  createProjectCoauthorsHint:
+    "Personas no registradas que también crearon este proyecto. Si marcas varias como principal, se muestra la primera.",
+  createProjectCoauthorName: "Nombre del co-autor",
+  createProjectCoauthorPrincipal: "Mostrar como creador del proyecto",
+  createProjectCoauthorPrincipalHint: "Su nombre y enlaces reemplazan a los tuyos en la tarjeta y el detalle.",
+  createProjectCoauthorAdd: "Añadir co-autor",
+  createProjectCoauthorRemove: "Quitar co-autor",
+  myProjectsTitle: "Mis proyectos",
+  myProjectsDescription: "Edita tus proyectos o dalos de baja cuando ya no deban aparecer en el catálogo.",
+  myProjectsManage: "Gestionar mis proyectos",
+  myProjectsActive: "Activos",
+  myProjectsDeletedHistory: "Dados de baja",
+  myProjectsEmpty: "Aún no has publicado proyectos. Comparte el primero para que la comunidad lo descubra.",
+  myProjectsEmptyCta: "Crear un proyecto",
+  myProjectsEdit: "Editar",
+  myProjectsDelete: "Dar de baja",
+  myProjectsDeletedBadge: "Dado de baja",
+  myProjectsView: "Ver proyecto",
+  myProjectsBackToProfile: "Volver al perfil",
+  myProjectsDeleteDialogTitle: "Dar de baja el proyecto",
+  myProjectsDeleteCancel: "Cancelar",
+  myProjectsDeleteConfirmButton: "Sí, dar de baja",
+  myProjectsDeleting: "Dando de baja…",
+  myProjectsDeleted: "Proyecto dado de baja. Ya no aparece en el catálogo público.",
+  myProjectsDeleteError: "No se pudo dar de baja el proyecto. Inténtalo de nuevo.",
+  myProjectsSessionExpired: "Tu sesión expiró. Inicia sesión y vuelve a intentarlo.",
+  myProjectsLoadError: "No se pudieron cargar tus proyectos. Inténtalo de nuevo.",
+  myProjectsDeleteMessage: (title) =>
+    `¿Dar de baja "${title}"? Dejará de aparecer en el catálogo público. Esta acción no se puede deshacer desde tu cuenta.`,
+  myProjectsCount: (count) =>
+    count === 1 ? "1 proyecto publicado" : `${count} proyectos publicados`,
+  editProjectTitle: "Editar proyecto",
+  editProjectDescription: "Actualiza los datos de tu proyecto. Los cambios se ven de inmediato en el catálogo.",
+  editProjectSubmit: "Guardar cambios",
+  editProjectSubmitting: "Guardando…",
+  editProjectSaved: "Cambios guardados.",
+  editProjectInvalid: "Revisa los datos del proyecto e inténtalo de nuevo.",
+  editProjectSessionExpired: "Tu sesión expiró. Inicia sesión y vuelve a intentarlo.",
+  editProjectError: "No se pudieron guardar los cambios. Inténtalo de nuevo.",
+  editProjectBack: "Volver a mis proyectos",
+  projectUpdated: "Cambios guardados en tu proyecto.",
   notFoundTitle: "No encontramos esa página.",
   notFoundDescription:
     "El enlace puede estar vencido o la dirección no existe. Puedes volver a explorar los proyectos.",
@@ -369,6 +458,8 @@ const en: Dict = {
   projectRepository: "Repository",
   projectLiveDemo: "Live demo",
   projectAuthor: "Profile information",
+  projectCoauthorsTitle: "Co-authors",
+  projectCoauthorsMore: (count) => (count === 1 ? "+1 person" : `+${count} people`),
   profileTitle: "Your profile",
   profileDescription: "Update your name and the links you share.",
   profilePersonalInfo: "Personal details",
@@ -379,6 +470,8 @@ const en: Dict = {
   profileTwitter: "X or Twitter URL",
   profileWhatsapp: "WhatsApp",
   profileWhatsappHint: "Include the country code, numbers only.",
+  profileInstagram: "Instagram URL",
+  profileEmail: "Email address",
   profileSave: "Save changes",
   profileSaving: "Saving…",
   profileSaved: "Profile updated.",
@@ -416,6 +509,48 @@ const en: Dict = {
   createProjectSessionExpired: "Your session expired. Sign in and try again.",
   createProjectError: "Could not publish the project. Please try again.",
   createProjectCreated: "Your project is now published on Colombia Hunt.",
+  createProjectCoauthors: "Co-authors (optional)",
+  createProjectCoauthorsHint:
+    "Unregistered people who also created this project. If you mark several as principal, the first one is shown.",
+  createProjectCoauthorName: "Co-author name",
+  createProjectCoauthorPrincipal: "Show as the project creator",
+  createProjectCoauthorPrincipalHint: "Their name and links replace yours on the card and detail page.",
+  createProjectCoauthorAdd: "Add co-author",
+  createProjectCoauthorRemove: "Remove co-author",
+  myProjectsTitle: "My projects",
+  myProjectsDescription: "Edit your projects or unpublish them when they should no longer appear in the catalog.",
+  myProjectsManage: "Manage my projects",
+  myProjectsActive: "Active",
+  myProjectsDeletedHistory: "Unpublished",
+  myProjectsEmpty: "You haven't published any projects yet. Share your first one so the community can discover it.",
+  myProjectsEmptyCta: "Create a project",
+  myProjectsEdit: "Edit",
+  myProjectsDelete: "Unpublish",
+  myProjectsDeletedBadge: "Unpublished",
+  myProjectsView: "View project",
+  myProjectsBackToProfile: "Back to profile",
+  myProjectsDeleteDialogTitle: "Unpublish project",
+  myProjectsDeleteCancel: "Cancel",
+  myProjectsDeleteConfirmButton: "Yes, unpublish",
+  myProjectsDeleting: "Unpublishing…",
+  myProjectsDeleted: "Project unpublished. It no longer appears in the public catalog.",
+  myProjectsDeleteError: "Could not unpublish the project. Please try again.",
+  myProjectsSessionExpired: "Your session expired. Sign in and try again.",
+  myProjectsLoadError: "Could not load your projects. Please try again.",
+  myProjectsDeleteMessage: (title) =>
+    `Unpublish "${title}"? It will stop appearing in the public catalog. You cannot undo this from your account.`,
+  myProjectsCount: (count) =>
+    count === 1 ? "1 published project" : `${count} published projects`,
+  editProjectTitle: "Edit project",
+  editProjectDescription: "Update your project details. Changes appear in the catalog right away.",
+  editProjectSubmit: "Save changes",
+  editProjectSubmitting: "Saving…",
+  editProjectSaved: "Changes saved.",
+  editProjectInvalid: "Check the project details and try again.",
+  editProjectSessionExpired: "Your session expired. Sign in and try again.",
+  editProjectError: "Could not save your changes. Please try again.",
+  editProjectBack: "Back to my projects",
+  projectUpdated: "Changes saved to your project.",
   notFoundTitle: "We couldn't find that page.",
   notFoundDescription:
     "The link may be outdated or the address may not exist. You can go back and explore projects.",

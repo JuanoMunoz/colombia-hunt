@@ -64,6 +64,8 @@ export const profiles = sqliteTable(
         githubUrl: text("github_url"),
         linkedinUrl: text("linkedin_url"),
         twitterUrl: text("twitter_url"),
+        instagramUrl: text("instagram_url"),
+        email: text("email"),
         whatsapp: text("whatsapp"), // guarda solo el número: 573001234567
         ...timestamps,
     },
@@ -96,6 +98,25 @@ export const projectCategories = sqliteTable(
         categoryId: integer("category_id").notNull().references(() => categories.id, { onDelete: "cascade" }),
     },
     (t) => [primaryKey({ columns: [t.projectId, t.categoryId] })],
+);
+
+// ---------- Co-autores (personas no registradas por proyecto) ----------
+export const projectCoauthors = sqliteTable(
+    "project_coauthors",
+    {
+        id: integer("id").primaryKey({ autoIncrement: true }),
+        projectId: integer("project_id").notNull().references(() => projects.id, { onDelete: "cascade" }),
+        name: text("name").notNull(),
+        githubUrl: text("github_url"),
+        linkedinUrl: text("linkedin_url"),
+        twitterUrl: text("twitter_url"),
+        instagramUrl: text("instagram_url"),
+        email: text("email"),
+        whatsapp: text("whatsapp"), // guarda solo el número: 573001234567
+        showAsCreator: integer("show_as_creator", { mode: "boolean" }).notNull().default(false),
+        ...timestamps,
+    },
+    (t) => [index("project_coauthors_project_idx").on(t.projectId)],
 );
 
 export const projectLikes = sqliteTable(

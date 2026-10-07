@@ -98,7 +98,20 @@ export type ApiProfile = {
     githubUrl: string | null;
     linkedinUrl: string | null;
     twitterUrl: string | null;
+    instagramUrl: string | null;
+    email: string | null;
     whatsapp: string | null;
+};
+
+export type CreateProjectCoauthorInput = {
+    name: string;
+    githubUrl?: string;
+    linkedinUrl?: string;
+    twitterUrl?: string;
+    instagramUrl?: string;
+    email?: string;
+    whatsapp?: string;
+    showAsCreator?: boolean;
 };
 
 export type CreateProjectInput = {
@@ -109,6 +122,7 @@ export type CreateProjectInput = {
     imageUrl: string | null;
     pageUrl: string;
     livecodeUrl: string;
+    coauthors?: CreateProjectCoauthorInput[];
 };
 
 export const catalogApi = {
@@ -137,6 +151,31 @@ export const profileApi = {
     },
 };
 
+export type UpdateProjectInput = {
+    title: string;
+    description: string;
+    cityId: number;
+    categoryIds: number[];
+    imageUrl: string | null;
+    pageUrl: string;
+    livecodeUrl: string;
+};
+
+export type OwnProjectItem = {
+    id: number;
+    title: string;
+    description: string | null;
+    imageUrl: string | null;
+    pageUrl: string | null;
+    livecodeUrl: string | null;
+    deleted: boolean;
+    createdAt: string | null;
+    city: { id: number; name: string; slug: string | null };
+    creator: { name: string };
+    categories: { id: number; code: string; name: string }[];
+    likesCount: number;
+};
+
 export const projectApi = {
     create(changes: CreateProjectInput, options?: HttpClientOptions) {
         return httpClient.post<{ projectId: number }, CreateProjectInput>(
@@ -144,5 +183,18 @@ export const projectApi = {
             changes,
             options,
         );
+    },
+    mine(options?: HttpClientOptions) {
+        return httpClient.get<{ items: OwnProjectItem[] }>("/api/projects/mine", options);
+    },
+    update(id: number, changes: UpdateProjectInput, options?: HttpClientOptions) {
+        return httpClient.patch<{ projectId: number }, UpdateProjectInput>(
+            `/api/projects/${id}`,
+            changes,
+            options,
+        );
+    },
+    remove(id: number, options?: HttpClientOptions) {
+        return httpClient.delete(`/api/projects/${id}`, options);
     },
 };

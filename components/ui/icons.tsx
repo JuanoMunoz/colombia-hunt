@@ -67,8 +67,50 @@ export function WhatsAppIcon({ className = "h-4 w-4", ...props }: SocialIconProp
   );
 }
 
-export function HeartIcon({ filled = false, className = "h-5 w-5" }: { filled?: boolean; className?: string }) {
+export function InstagramIcon({ className = "h-4 w-4", ...props }: SocialIconProps) {
   return (
+    <svg
+      role="img"
+      viewBox="0 0 24 24"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      {...props}
+    >
+      <title>Instagram</title>
+      <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
+      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+      <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
+    </svg>
+  );
+}
+
+export function MailIcon({ className = "h-4 w-4", ...props }: SocialIconProps) {
+  return (
+    <svg
+      role="img"
+      viewBox="0 0 24 24"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      {...props}
+    >
+      <title>Email</title>
+      <rect width="20" height="16" x="2" y="4" rx="2" />
+      <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+    </svg>
+  );
+}
+
+export function HeartIcon({ filled = false, className = "h-5 w-5" }: { filled?: boolean; className?: string }) {  return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 24 24"
@@ -193,6 +235,12 @@ export function SocialIcon({ label, className = "h-4 w-4" }: { label: string; cl
       return <XIcon className={className} aria-hidden="true" />;
     case "whatsapp":
       return <WhatsAppIcon className={className} aria-hidden="true" />;
+    case "instagram":
+      return <InstagramIcon className={className} aria-hidden="true" />;
+    case "email":
+    case "correo":
+    case "mail":
+      return <MailIcon className={className} aria-hidden="true" />;
     default:
       return <GlobeIcon className={className} />;
   }

@@ -156,7 +156,10 @@ pnpm exec next build
 | **Categorías** | `PUT / DELETE /api/categories/:id` | Actualiza o elimina una categoría existente | Solo Admin |
 | **Proyectos** | `GET /api/projects/list` | Obtiene listado paginado con búsqueda y filtros | Público |
 | **Proyectos** | `POST /api/projects` | Registra un nuevo proyecto en el catálogo | Autenticado |
-| **Proyectos** | `DELETE / PATCH /api/projects/:id` | Aplica baja lógica o restaura un proyecto | Creador o Admin |
+| **Proyectos** | `GET /api/projects/mine` | Lista los proyectos del usuario activo (activos + dados de baja) | Autenticado |
+| **Proyectos** | `PATCH /api/projects/:id` | Edita título, descripción, ciudad, categorías e URLs del proyecto | Creador o Admin |
+| **Proyectos** | `DELETE /api/projects/:id` | Aplica baja lógica al proyecto | Creador o Admin |
+| **Proyectos** | `PATCH /api/projects/:id` (`{ deleted }`) | Restaura un proyecto dado de baja (solo panel admin) | Creador o Admin |
 | **Proyectos** | `POST /api/projects/:id/like` | Alterna me gusta en un proyecto | Autenticado |
 | **Perfil** | `GET / PATCH /api/profile` | Obtiene o actualiza el perfil del usuario activo | Autenticado |
 | **Imágenes** | `POST /api/uploadthing` | Handler para subida de imágenes de proyectos | Autenticado |
