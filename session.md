@@ -7,7 +7,7 @@
 
 ## Objetivo actual
 
-Completado (T52 el 2026-10-10; cambios sin commit — el usuario no lo pidió).
+Completado (T54 el 2026-10-10; sin commit — no pedido).
 
 ## Contexto
 
@@ -19,6 +19,8 @@ Completado (T52 el 2026-10-10; cambios sin commit — el usuario no lo pidió).
 
 | Fecha | QuÃ© se hizo | Archivos tocados | VerificaciÃ³n |
 |-------|-------------|------------------|--------------|
+| 2026-10-10 | T54: scroll vertical en dropdowns de ciudades/categorías del navbar | `components/layout/Navbar.tsx` (2 listas + panel móvil), `design.md`, `checklist.md`, `session.md` | Desktop: `absolute max-h-80 min-w-56 overflow-y-auto`; móvil: lista `static max-h-64` en flujo dentro del panel `max-h-[calc(100dvh-4rem)] overflow-y-auto`; `overscroll-contain` en ambos. `tsc` 0, ESLint 0, build OK, `/`=200. Revisión visual pendiente del usuario. |
+| 2026-10-10 | T53: seed con 20 categorías + 8 ciudades ejecutado en Turso | `db/seed.ts` (solo datos), `checklist.md`, `session.md` | `tsc` 0, ESLint 0; `pnpm db:seed` → 12/24/26/52 exactos; build 75/75; smoke: APIs 12 y 26, `/ciudades/cartagena` y `/ciudades/villavicencio` 200, `/categorias/43` (web3) 200. `.ENV` no inspeccionado (solo usado por el script). |
 | 2026-10-10 | T52: navbar desktop con menú de cuenta (avatar, sin textos sueltos) + texto visible en admin en ambos temas | `components/layout/Navbar.tsx`, `components/ui/SignOutButton.tsx` (variante `menu`), `components/ui/icons.tsx` (`UserIcon`/`LogoutIcon`), `components/layout/AdminSidebar.tsx`, `components/sections/AdminCitiesManager.tsx`, `components/sections/AdminCategoriesManager.tsx`, `components/sections/AdminProjectsManager.tsx`, `components/sections/OwnProjectsList.tsx`, `app/admin/layout.tsx`, `app/admin/page.tsx`, `app/i18n/dictionaries.ts` (`accountMenu`), `design.md`, `checklist.md`, `session.md` | Skills `antislop-ui`/`laws-of-ux`; causa raíz admin: `bg-white` fijo + `text-white` sobre brand claro en dark. `tsc` 0, ESLint 0 (12 archivos), `next build` OK; grep `bg-white|text-white|emerald|stone-50` en admin = 0; smoke `/`=200, `/admin`=307. Revisión visual con sesión pendiente de cuenta de prueba. |
 | 2026-10-10 | T51: propuesta de 20 categorías ES/EN (verticales CO + transversales builder) sin solapar las 6 actuales | Solo chat, sin archivos de código; usuario las crea en `/admin/categorias` | Lista con `code` + nombre/descripción ES/EN + motivo CO el 2026-10-10 |
 | 2026-10-10 | T50: cerrar sesión (navbar + `/perfil` → `/`), `/perfil` como card con foto opcional y fallback inicial determinista, pública `/perfil/[id]` estilo links con redes y proyectos, creador enlazado en card/detalle | `components/ui/SignOutButton.tsx:1`, `components/ui/ProfileAvatar.tsx:1`, `components/layout/Navbar.tsx:12,302,335`, `components/sections/ProfileForm.tsx:1`, `app/perfil/page.tsx:6,26,47`, `app/perfil/[id]/page.tsx:1`, `app/api/profile/route.ts:7`, `app/api/uploadthing/core.ts:11`, `lib/project-data.ts:38,96`, `lib/http-client.ts:96`, `components/ui/ProjectCard.tsx:90`, `components/sections/ProjectDetails.tsx:99,190`, `app/robots.ts:7`, `next.config.ts:8`, `app/i18n/dictionaries.ts:110`, `design.md`, `checklist.md`, `session.md` | Skills `antislop-ui`/`laws-of-ux`; `tsc` 0 errores, ESLint 0 en 14 archivos, `next build` OK con `/perfil/[id]` ƒ; smoke prod local: `/perfil` anon 307, `GET /api/profile` 401, `/perfil/no-existe-xyz` 404, `/api/uploadthing` 200; `robots.txt` permite `/perfil/`. Escritura autenticada (subida real, logout con sesión) pendiente de cuenta de prueba. |

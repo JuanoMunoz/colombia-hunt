@@ -142,7 +142,10 @@ export default function Navbar() {
           </svg>
         </button>
         {citiesOpen ? (
-          <ul className={`absolute top-full z-50 mt-1 rounded-xl border border-(--brand)/15 bg-(--background) p-1 shadow-lg ${isMobile ? "left-0 right-0" : "right-0 min-w-44"}`}>
+          <ul className={isMobile
+            ? "static mt-1 max-h-64 overflow-y-auto overscroll-contain rounded-xl border border-(--brand)/15 bg-(--background) p-1 shadow-lg"
+            : "absolute top-full right-0 z-50 mt-1 max-h-80 min-w-56 overflow-y-auto overscroll-contain rounded-xl border border-(--brand)/15 bg-(--background) p-1 shadow-lg"
+          }>
             {cities.map((city) => {
               const spanish = city.translations.es;
               const localized = city.translations[lang] ?? spanish;
@@ -211,7 +214,10 @@ export default function Navbar() {
           </svg>
         </button>
         {categoriesOpen ? (
-          <ul className={`absolute top-full z-50 mt-1 rounded-xl border border-(--brand)/15 bg-(--background) p-1 shadow-lg ${isMobile ? "left-0 right-0" : "right-0 min-w-44"}`}>
+          <ul className={isMobile
+            ? "static mt-1 max-h-64 overflow-y-auto overscroll-contain rounded-xl border border-(--brand)/15 bg-(--background) p-1 shadow-lg"
+            : "absolute top-full right-0 z-50 mt-1 max-h-80 min-w-56 overflow-y-auto overscroll-contain rounded-xl border border-(--brand)/15 bg-(--background) p-1 shadow-lg"
+          }>
             {categories.map((category) => {
               const localized = category.translations[lang] ?? category.translations.es;
               if (!localized) return null;
@@ -421,7 +427,7 @@ export default function Navbar() {
         </button>
         <div
           id="mobile-navigation"
-          className={`${mobileOpen ? "flex" : "hidden"} absolute top-full right-0 left-0 z-50 flex-col gap-1 border-b border-(--brand)/15 bg-(--background) px-4 py-2 lg:hidden`}
+          className={`${mobileOpen ? "flex" : "hidden"} absolute top-full right-0 left-0 z-50 max-h-[calc(100dvh-4rem)] flex-col gap-1 overflow-y-auto overscroll-contain border-b border-(--brand)/15 bg-(--background) px-4 py-2 lg:hidden`}
         >
           {renderNavigationLinks(true)}
           {renderCitiesMenu(true)}
