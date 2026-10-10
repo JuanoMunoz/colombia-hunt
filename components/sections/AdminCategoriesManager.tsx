@@ -156,7 +156,7 @@ export function AdminCategoriesManager() {
 
     return (
         <div className="space-y-6">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-(--brand)/15 shadow-xs">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-(--background) p-6 rounded-2xl border border-(--brand)/15 shadow-xs">
                 <div>
                     <h2 className="text-xl font-bold text-(--brand)">CRUD de Categorías</h2>
                     <p className="text-xs sm:text-sm text-(--foreground)/70 mt-1">
@@ -165,7 +165,7 @@ export function AdminCategoriesManager() {
                 </div>
                 <button
                     onClick={openCreateForm}
-                    className="h-11 px-5 rounded-full bg-(--brand) text-white font-semibold text-sm hover:bg-(--brand)/90 transition-colors shadow-xs flex items-center gap-2 cursor-pointer"
+                    className="h-11 px-5 rounded-full bg-(--brand) text-(--background) font-semibold text-sm hover:bg-(--brand)/90 transition-colors shadow-xs flex items-center gap-2 cursor-pointer"
                 >
                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -181,7 +181,7 @@ export function AdminCategoriesManager() {
             )}
 
             {/* Table list */}
-            <div className="bg-white rounded-2xl border border-(--brand)/15 overflow-hidden shadow-xs">
+            <div className="bg-(--background) rounded-2xl border border-(--brand)/15 overflow-hidden shadow-xs">
                 {loading ? (
                     <div className="p-8 text-center text-sm text-(--foreground)/70">Cargando categorías...</div>
                 ) : categories.length === 0 ? (
@@ -238,7 +238,7 @@ export function AdminCategoriesManager() {
             {/* Modal / Form */}
             {isFormOpen && (
                 <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4 overflow-y-auto">
-                    <div className="bg-white rounded-2xl border border-(--brand)/20 max-w-2xl w-full p-6 shadow-xl max-h-[90vh] overflow-y-auto">
+                    <div className="bg-(--background) rounded-2xl border border-(--brand)/20 max-w-2xl w-full p-6 shadow-xl max-h-[90vh] overflow-y-auto">
                         <div className="flex items-center justify-between pb-4 border-b border-(--brand)/10 mb-4">
                             <h3 className="text-lg font-bold text-(--brand)">
                                 {editingCategory ? `Editar Categoría #${editingCategory.id}` : "Crear Nueva Categoría"}
@@ -270,7 +270,7 @@ export function AdminCategoriesManager() {
                                     placeholder="ej. finanzas, open-source, salud"
                                     value={code}
                                     onChange={(e) => setCode(e.target.value)}
-                                    className="w-full h-11 px-3.5 rounded-xl border border-(--brand)/20 focus:outline-(--brand) font-mono text-sm"
+                                    className="w-full h-11 px-3.5 rounded-xl border border-(--brand)/20 bg-(--background) text-(--foreground) placeholder:text-(--foreground)/50 focus:outline-(--brand) font-mono text-sm"
                                 />
                             </div>
 
@@ -284,7 +284,7 @@ export function AdminCategoriesManager() {
                                         placeholder="ej. Finanzas & Fintech"
                                         value={esName}
                                         onChange={(e) => setEsName(e.target.value)}
-                                        className="w-full h-11 px-3.5 rounded-xl border border-(--brand)/20 focus:outline-(--brand) text-sm bg-white"
+                                        className="w-full h-11 px-3.5 rounded-xl border border-(--brand)/20 focus:outline-(--brand) text-sm bg-(--background) text-(--foreground) placeholder:text-(--foreground)/50"
                                     />
                                 </div>
                                 <div>
@@ -295,7 +295,7 @@ export function AdminCategoriesManager() {
                                         placeholder="Descripción de la categoría en español..."
                                         value={esDescription}
                                         onChange={(e) => setEsDescription(e.target.value)}
-                                        className="w-full p-3 rounded-xl border border-(--brand)/20 focus:outline-(--brand) text-sm bg-white"
+                                        className="w-full p-3 rounded-xl border border-(--brand)/20 focus:outline-(--brand) text-sm bg-(--background) text-(--foreground) placeholder:text-(--foreground)/50"
                                     />
                                 </div>
                             </div>
@@ -310,7 +310,7 @@ export function AdminCategoriesManager() {
                                         placeholder="ej. Finance & Fintech"
                                         value={enName}
                                         onChange={(e) => setEnName(e.target.value)}
-                                        className="w-full h-11 px-3.5 rounded-xl border border-(--brand)/20 focus:outline-(--brand) text-sm bg-white"
+                                        className="w-full h-11 px-3.5 rounded-xl border border-(--brand)/20 focus:outline-(--brand) text-sm bg-(--background) text-(--foreground) placeholder:text-(--foreground)/50"
                                     />
                                 </div>
                                 <div>
@@ -321,7 +321,7 @@ export function AdminCategoriesManager() {
                                         placeholder="Description of the category in English..."
                                         value={enDescription}
                                         onChange={(e) => setEnDescription(e.target.value)}
-                                        className="w-full p-3 rounded-xl border border-(--brand)/20 focus:outline-(--brand) text-sm bg-white"
+                                        className="w-full p-3 rounded-xl border border-(--brand)/20 focus:outline-(--brand) text-sm bg-(--background) text-(--foreground) placeholder:text-(--foreground)/50"
                                     />
                                 </div>
                             </div>
@@ -337,7 +337,7 @@ export function AdminCategoriesManager() {
                                 <button
                                     type="submit"
                                     disabled={submitting}
-                                    className="h-11 px-6 rounded-full bg-(--brand) text-white hover:bg-(--brand)/90 text-sm font-semibold shadow-xs disabled:opacity-50 cursor-pointer"
+                                    className="h-11 px-6 rounded-full bg-(--brand) text-(--background) hover:bg-(--brand)/90 text-sm font-semibold shadow-xs disabled:opacity-50 cursor-pointer"
                                 >
                                     {submitting ? "Guardando..." : editingCategory ? "Actualizar Categoría" : "Crear Categoría"}
                                 </button>

@@ -50,7 +50,7 @@ export function AdminSidebar({ className = "" }: AdminSidebarProps) {
     const pathname = usePathname();
 
     return (
-        <aside className={`w-full md:w-64 bg-white rounded-2xl border border-(--brand)/15 p-4 shrink-0 shadow-xs ${className}`}>
+        <aside className={`w-full md:w-64 bg-(--background) rounded-2xl border border-(--brand)/15 p-4 shrink-0 shadow-xs ${className}`}>
             <div className="mb-4 pb-3 border-b border-(--brand)/10 px-2 hidden md:block">
                 <span className="text-xs font-bold uppercase tracking-wider text-(--brand)/70">
                     Panel de Administración
@@ -66,11 +66,11 @@ export function AdminSidebar({ className = "" }: AdminSidebarProps) {
                             href={item.href}
                             className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-colors min-h-11 whitespace-nowrap ${
                                 isActive
-                                    ? "bg-(--brand) text-white shadow-xs"
+                                    ? "bg-(--brand) text-(--background) shadow-xs"
                                     : "text-(--foreground) hover:bg-(--brand)/5 hover:text-(--brand)"
                             }`}
                         >
-                            <span className={isActive ? "text-white" : "text-(--brand)"}>
+                            <span className={isActive ? "text-(--background)" : "text-(--brand)"}>
                                 {item.icon}
                             </span>
                             <span>{item.label}</span>

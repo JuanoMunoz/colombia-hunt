@@ -8,7 +8,9 @@ import { getDict } from "../../app/i18n/dictionaries";
 import { useLanguage, type Lang } from "../../app/i18n/LanguageContext";
 import { useSession } from "../../app/lib/auth-client";
 import { catalogApi, type ApiCategory, type ApiCity } from "../../lib/http-client";
+import ProfileAvatar from "../ui/ProfileAvatar";
 import SignOutButton from "../ui/SignOutButton";
+import { UserIcon } from "../ui/icons";
 
 const LANGS: Lang[] = ["es", "en"];
 
@@ -19,6 +21,7 @@ export default function Navbar() {
   const [citiesOpen, setCitiesOpen] = useState(false);
   const [categoriesOpen, setCategoriesOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [accountOpen, setAccountOpen] = useState(false);
   const [cities, setCities] = useState<ApiCity[]>([]);
   const [categories, setCategories] = useState<ApiCategory[]>([]);
 
@@ -70,11 +73,11 @@ export default function Navbar() {
     };
   }, [currentUserId]);
 
-  const accountItem = sessionPending
+  // Con sesión, la cuenta vive en el avatar con desplegable (sin textos
+  // sueltos en desktop); sin sesión hay un solo enlace de acceso.
+  const accountItem = sessionPending || session?.user
     ? null
-    : session?.user
-      ? { href: "/perfil", label: t.profile }
-      : { href: "/iniciar-sesion", label: t.loginLink };
+    : { href: "/iniciar-sesion", label: t.loginLink };
 
   const menuItems = [
     { href: "/explorar", label: t.explore },
@@ -88,6 +91,7 @@ export default function Navbar() {
     setMobileOpen(false);
     setCitiesOpen(false);
     setCategoriesOpen(false);
+    setAccountOpen(false);
   }
 
   function renderNavigationLinks(isMobile: boolean) {
@@ -115,6 +119,7 @@ export default function Navbar() {
           aria-haspopup="true"
           onClick={() => {
             setCategoriesOpen(false);
+            setAccountOpen(false);
             setCitiesOpen((open) => !open);
           }}
           className={isMobile
@@ -183,6 +188,7 @@ export default function Navbar() {
           aria-haspopup="true"
           onClick={() => {
             setCitiesOpen(false);
+            setAccountOpen(false);
             setCategoriesOpen((open) => !open);
           }}
           className={isMobile
@@ -236,6 +242,77 @@ export default function Navbar() {
               </li>
             ) : null}
           </ul>
+        ) : null}
+      </div>
+    );
+  }
+
+  function renderAccountMenu() {
+    const user = session?.user;
+    if (sessionPending || !user) return null;
+    return (
+      <div className="relative ml-1">
+        <button
+          type="button"
+          aria-label={t.accountMenu}
+          aria-expanded={accountOpen}
+          aria-haspopup="menu"
+          onClick={() => {
+            setCitiesOpen(false);
+            setCategoriesOpen(false);
+            setAccountOpen((open) => !open);
+          }}
+          className="flex min-h-11 min-w-11 items-center justify-center rounded-full transition-shadow hover:ring-2 hover:ring-(--brand)/30 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--brand)"
+        >
+          <ProfileAvatar
+            name={user.name}
+            userId={user.id}
+            imageUrl={user.image ?? null}
+            fallbackLabel={t.profile}
+            className="size-9 text-sm"
+          />
+        </button>
+        {accountOpen ? (
+          <>
+            <button
+              type="button"
+              aria-hidden="true"
+              tabIndex={-1}
+              onClick={() => setAccountOpen(false)}
+              className="fixed inset-0 z-40 cursor-default"
+            />
+            <ul
+              role="menu"
+              aria-label={t.accountMenu}
+              className="absolute top-full right-0 z-50 mt-2 w-56 rounded-xl border border-(--brand)/15 bg-(--background) p-1 shadow-lg"
+            >
+              <li role="none">
+                <Link
+                  role="menuitem"
+                  href="/perfil"
+                  onClick={() => setAccountOpen(false)}
+                  className="flex min-h-11 items-center gap-2 rounded-md px-3 text-sm font-semibold text-(--foreground) transition-colors hover:bg-(--brand)/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--brand)"
+                >
+                  <UserIcon className="h-4 w-4 text-(--brand)" />
+                  {t.profile}
+                </Link>
+              </li>
+              <li role="none">
+                <Link
+                  role="menuitem"
+                  href="/mis-proyectos"
+                  onClick={() => setAccountOpen(false)}
+                  className="flex min-h-11 items-center gap-2 rounded-md px-3 text-sm font-semibold text-(--foreground) transition-colors hover:bg-(--brand)/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--brand)"
+                >
+                  {t.myProjectsManage}
+                </Link>
+              </li>
+              <li aria-hidden="true" className="mx-2 my-1 border-t border-(--brand)/10" />
+              <li role="none">
+                <SignOutButton variant="menu" />
+              </li>
+            </ul>
+          </>
         ) : null}
       </div>
     );
@@ -310,7 +387,7 @@ export default function Navbar() {
           {renderNavigationLinks(false)}
           {renderCitiesMenu(false)}
           {renderCategoriesMenu(false)}
-          {!sessionPending && session?.user ? <SignOutButton /> : null}
+          {renderAccountMenu()}
           {renderLanguageSwitcher(false)}
         </div>
         <button
@@ -322,6 +399,7 @@ export default function Navbar() {
             setMobileOpen((open) => !open);
             setCitiesOpen(false);
             setCategoriesOpen(false);
+            setAccountOpen(false);
           }}
           className="flex min-h-11 min-w-11 items-center justify-center rounded-md border border-(--brand)/20 text-(--brand) transition-colors hover:bg-(--brand)/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--brand) lg:hidden"
         >
@@ -349,8 +427,24 @@ export default function Navbar() {
           {renderCitiesMenu(true)}
           {renderCategoriesMenu(true)}
           {!sessionPending && session?.user ? (
-            <div className="self-start">
-              <SignOutButton />
+            <div className="flex flex-col gap-1">
+              <Link
+                href="/perfil"
+                onClick={closeMobileMenu}
+                className="flex min-h-11 w-full items-center rounded-md px-3 text-sm font-semibold text-(--brand) transition-colors hover:bg-(--brand)/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--brand)"
+              >
+                {t.profile}
+              </Link>
+              <Link
+                href="/mis-proyectos"
+                onClick={closeMobileMenu}
+                className="flex min-h-11 w-full items-center rounded-md px-3 text-sm font-semibold text-(--brand) transition-colors hover:bg-(--brand)/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--brand)"
+              >
+                {t.myProjectsManage}
+              </Link>
+              <div className="self-start">
+                <SignOutButton />
+              </div>
             </div>
           ) : null}
           {renderLanguageSwitcher(true)}

@@ -117,6 +117,7 @@ export type Dict = {
   signOut: string;
   signingOut: string;
   signOutError: string;
+  accountMenu: string;
   publicProfileProjects: string;
   publicProfileEmpty: string;
   publicProfileBack: string;
@@ -316,6 +317,7 @@ const es: Dict = {
   signOut: "Cerrar sesión",
   signingOut: "Cerrando sesión…",
   signOutError: "No se pudo cerrar la sesión. Inténtalo de nuevo.",
+  accountMenu: "Menú de cuenta",
   publicProfileProjects: "Proyectos",
   publicProfileEmpty: "Esta persona aún no ha publicado proyectos.",
   publicProfileBack: "Volver a explorar",
@@ -521,6 +523,7 @@ const en: Dict = {
   signOut: "Sign out",
   signingOut: "Signing out…",
   signOutError: "Could not sign out. Please try again.",
+  accountMenu: "Account menu",
   publicProfileProjects: "Projects",
   publicProfileEmpty: "This person hasn't published any projects yet.",
   publicProfileBack: "Back to explore",

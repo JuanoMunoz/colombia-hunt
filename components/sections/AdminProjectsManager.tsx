@@ -105,7 +105,7 @@ export function AdminProjectsManager() {
 
     return (
         <div className="space-y-6">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-(--brand)/15 shadow-xs">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-(--background) p-6 rounded-2xl border border-(--brand)/15 shadow-xs">
                 <div>
                     <h2 className="text-xl font-bold text-(--brand)">CRUD & Moderación de Proyectos</h2>
                     <p className="text-xs sm:text-sm text-(--foreground)/70 mt-1">
@@ -117,7 +117,7 @@ export function AdminProjectsManager() {
                     <button
                         onClick={() => setFilterStatus("all")}
                         className={`px-3 py-1.5 rounded-full transition-colors cursor-pointer ${
-                            filterStatus === "all" ? "bg-(--brand) text-white" : "text-(--brand) hover:bg-(--brand)/10"
+                            filterStatus === "all" ? "bg-(--brand) text-(--background)" : "text-(--brand) hover:bg-(--brand)/10"
                         }`}
                     >
                         Todos ({projects.length})
@@ -125,7 +125,7 @@ export function AdminProjectsManager() {
                     <button
                         onClick={() => setFilterStatus("active")}
                         className={`px-3 py-1.5 rounded-full transition-colors cursor-pointer ${
-                            filterStatus === "active" ? "bg-(--brand) text-white" : "text-(--brand) hover:bg-(--brand)/10"
+                            filterStatus === "active" ? "bg-(--brand) text-(--background)" : "text-(--brand) hover:bg-(--brand)/10"
                         }`}
                     >
                         Activos ({projects.filter((p) => !p.deleted).length})
@@ -133,7 +133,7 @@ export function AdminProjectsManager() {
                     <button
                         onClick={() => setFilterStatus("deleted")}
                         className={`px-3 py-1.5 rounded-full transition-colors cursor-pointer ${
-                            filterStatus === "deleted" ? "bg-(--brand) text-white" : "text-(--brand) hover:bg-(--brand)/10"
+                            filterStatus === "deleted" ? "bg-(--brand) text-(--background)" : "text-(--brand) hover:bg-(--brand)/10"
                         }`}
                     >
                         Dados de baja ({projects.filter((p) => p.deleted).length})
@@ -148,7 +148,7 @@ export function AdminProjectsManager() {
             )}
 
             {/* Table list */}
-            <div className="bg-white rounded-2xl border border-(--brand)/15 overflow-hidden shadow-xs">
+            <div className="bg-(--background) rounded-2xl border border-(--brand)/15 overflow-hidden shadow-xs">
                 {loading ? (
                     <div className="p-8 text-center text-sm text-(--foreground)/70">Cargando proyectos...</div>
                 ) : filteredProjects.length === 0 ? (
@@ -170,7 +170,7 @@ export function AdminProjectsManager() {
                             </thead>
                             <tbody className="divide-y divide-(--brand)/10">
                                 {filteredProjects.map((project) => (
-                                    <tr key={project.id} className={`hover:bg-(--brand)/2 transition-colors ${project.deleted ? "bg-stone-50/50" : ""}`}>
+                                    <tr key={project.id} className={`hover:bg-(--brand)/2 transition-colors ${project.deleted ? "bg-(--secondary)/5" : ""}`}>
                                         <td className="py-3.5 px-4 font-mono font-bold text-(--brand)">
                                             #{project.id}
                                         </td>
@@ -205,9 +205,9 @@ export function AdminProjectsManager() {
                                                     Baja lógica
                                                 </span>
                                             ) : (
-                                                <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">
-                                                    Publicado
-                                                </span>
+                                                 <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-(--brand)/10 text-(--brand)">
+                                                     Publicado
+                                                 </span>
                                             )}
                                         </td>
                                         <td className="py-3.5 px-4 text-right">
@@ -223,7 +223,7 @@ export function AdminProjectsManager() {
                                                     onClick={() => handleToggleDelete(project)}
                                                     className={`px-3 py-1.5 rounded-lg font-semibold text-xs transition-colors cursor-pointer ${
                                                         project.deleted
-                                                            ? "border border-emerald-300 text-emerald-700 hover:bg-emerald-50"
+                                                            ? "border border-(--brand)/25 text-(--brand) hover:bg-(--brand)/10"
                                                             : "border border-(--secondary)/20 text-(--secondary) hover:bg-(--secondary)/10"
                                                     }`}
                                                 >

@@ -102,7 +102,7 @@ export default function OwnProjectsList({ initial }: { initial: OwnProjectItem[]
                         aria-pressed={filter === "active"}
                         className={`min-h-11 rounded-full px-3 py-1.5 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--brand) ${
                             filter === "active"
-                                ? "bg-(--brand) text-white"
+                                ? "bg-(--brand) text-(--background)"
                                 : "text-(--brand) hover:bg-(--brand)/10"
                         }`}
                     >
@@ -114,7 +114,7 @@ export default function OwnProjectsList({ initial }: { initial: OwnProjectItem[]
                         aria-pressed={filter === "deleted"}
                         className={`min-h-11 rounded-full px-3 py-1.5 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--brand) ${
                             filter === "deleted"
-                                ? "bg-(--brand) text-white"
+                                ? "bg-(--brand) text-(--background)"
                                 : "text-(--brand) hover:bg-(--brand)/10"
                         }`}
                     >
@@ -244,7 +244,7 @@ export default function OwnProjectsList({ initial }: { initial: OwnProjectItem[]
                                 ref={confirmRef}
                                 disabled={pendingId === dialogFor.id}
                                 onClick={handleConfirmDelete}
-                                className="inline-flex min-h-11 items-center justify-center rounded-md bg-(--secondary) px-4 text-sm font-semibold text-white transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--brand) disabled:cursor-wait disabled:opacity-70"
+                                className="inline-flex min-h-11 items-center justify-center rounded-md bg-(--secondary) px-4 text-sm font-semibold text-(--background) transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--brand) disabled:cursor-wait disabled:opacity-70"
                             >
                                 {t.myProjectsDeleteConfirmButton}
                             </button>

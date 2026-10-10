@@ -5,10 +5,11 @@ import { useState } from "react";
 import { getDict } from "../../app/i18n/dictionaries";
 import { useLanguage } from "../../app/i18n/LanguageContext";
 import { signOut } from "../../app/lib/auth-client";
+import { LogoutIcon } from "./icons";
 
 type SignOutButtonProps = {
     className?: string;
-    variant?: "default" | "danger";
+    variant?: "default" | "danger" | "menu";
 };
 
 /**
@@ -22,9 +23,11 @@ export default function SignOutButton({ className, variant = "default" }: SignOu
     const [error, setError] = useState(false);
 
     const defaultClassName =
-        variant === "danger"
-            ? "inline-flex min-h-11 items-center justify-center rounded-md px-4 text-sm font-semibold text-(--secondary) transition-colors hover:bg-(--secondary)/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--brand)"
-            : "inline-flex min-h-11 items-center justify-center rounded-md border border-(--brand)/25 px-4 text-sm font-semibold text-(--brand) transition-colors hover:bg-(--brand)/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--brand)";
+        variant === "menu"
+            ? "flex min-h-11 w-full items-center gap-2 rounded-md px-3 text-sm font-semibold text-(--secondary) transition-colors hover:bg-(--secondary)/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--brand)"
+            : variant === "danger"
+                ? "inline-flex min-h-11 items-center justify-center rounded-md px-4 text-sm font-semibold text-(--secondary) transition-colors hover:bg-(--secondary)/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--brand)"
+                : "inline-flex min-h-11 items-center justify-center rounded-md border border-(--brand)/25 px-4 text-sm font-semibold text-(--brand) transition-colors hover:bg-(--brand)/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--brand)";
 
     async function handleSignOut() {
         if (pending) return;
@@ -42,18 +45,21 @@ export default function SignOutButton({ className, variant = "default" }: SignOu
     }
 
     return (
-        <span className="inline-flex flex-col items-start gap-1">
+        <span className={variant === "menu" ? "flex w-full flex-col items-stretch" : "inline-flex flex-col items-start gap-1"}>
             <button
                 type="button"
                 onClick={handleSignOut}
                 disabled={pending}
                 className={className ?? defaultClassName}
             >
+                {variant === "menu" ? <LogoutIcon className="h-4 w-4" /> : null}
                 {pending ? t.signingOut : t.signOut}
             </button>
-            <span aria-live="polite" className="min-h-5 text-xs text-(--secondary)">
-                {error ? t.signOutError : ""}
-            </span>
+            {error ? (
+                <span role="alert" className="px-1 pt-1 text-xs text-(--secondary)">
+                    {t.signOutError}
+                </span>
+            ) : null}
         </span>
     );
 }
