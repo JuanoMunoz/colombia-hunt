@@ -83,7 +83,12 @@ export default function ProjectCard({
             </Link>
           </h3>
           <p className="truncate text-xs leading-4 text-(--foreground)/60">
-            {project.creator.name}
+            <Link
+              href={`/perfil/${project.creatorId}`}
+              className="rounded-sm font-medium text-(--foreground)/70 underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--brand)"
+            >
+              {project.creator.name}
+            </Link>
             {project.city.name ? ` · ${project.city.name}` : ""}
             {project.extraCoauthors > 0 ? ` · ${t.projectCoauthorsMore(project.extraCoauthors)}` : ""}
           </p>

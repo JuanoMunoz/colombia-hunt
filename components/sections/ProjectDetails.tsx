@@ -97,7 +97,13 @@ export default function ProjectDetails({
               </div>
             </div>
             <p className="text-sm text-(--foreground)/70">
-              {project.creator.name} · {project.city.name}
+              <Link
+                href={`/perfil/${project.creatorId}`}
+                className="rounded-sm font-medium text-(--brand) underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--brand)"
+              >
+                {project.creator.name}
+              </Link>
+              {" · "}{project.city.name}
               {project.extraCoauthors > 0 ? ` · ${t.projectCoauthorsMore(project.extraCoauthors)}` : ""}
             </p>
           </header>
@@ -188,9 +194,12 @@ export default function ProjectDetails({
         ) : null}
 
         <footer className="mt-8 flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-(--brand)/10 pt-6 text-sm">
-          <span className="font-medium text-(--foreground)">
+          <Link
+            href={`/perfil/${project.creatorId}`}
+            className="inline-flex min-h-11 items-center rounded-sm font-medium text-(--foreground) underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--brand)"
+          >
             {project.creator.name}
-          </span>
+          </Link>
           {project.creator.profileLinks.map((profile) => (
             <a
               key={profile.label}

@@ -39,6 +39,7 @@ export type ProjectRecord = {
     pageUrl: string | null;
     livecodeUrl: string | null;
     city: { id: number; name: string; slug: string | null };
+    creatorId: string;
     creator: { name: string; profileLinks: ProjectProfileLink[] };
     /** Todos los co-authors del proyecto, ordenados por id ascendente. */
     coauthors: ProjectCoAuthor[];
@@ -52,10 +53,44 @@ export type ProjectFilters = {
     cityId?: number;
     categoryId?: number;
     projectId?: number;
+    creatorId?: string;
     query?: string;
     limit?: number;
     offset?: number;
 };
+
+export type PublicProfile = {
+    userId: string;
+    name: string;
+    image: string | null;
+    profileLinks: ProjectProfileLink[];
+};
+
+export async function getPublicProfile(userId: string): Promise<PublicProfile | null> {
+    if (!userId || userId.length > 128) return null;
+    const [row] = await db
+        .select({
+            name: user.name,
+            image: user.image,
+            githubUrl: profiles.githubUrl,
+            linkedinUrl: profiles.linkedinUrl,
+            twitterUrl: profiles.twitterUrl,
+            instagramUrl: profiles.instagramUrl,
+            email: profiles.email,
+            whatsapp: profiles.whatsapp,
+        })
+        .from(user)
+        .leftJoin(profiles, eq(profiles.userId, user.id))
+        .where(eq(user.id, userId))
+        .limit(1);
+    if (!row) return null;
+    return {
+        userId,
+        name: row.name,
+        image: row.image,
+        profileLinks: profileLinks(row),
+    };
+}
 
 export type ProjectsPage = {
     items: ProjectRecord[];
@@ -166,6 +201,7 @@ export async function getProjects({
     cityId,
     categoryId,
     projectId,
+    creatorId,
     query: searchQuery,
     limit = 12,
     offset = 0,
@@ -175,6 +211,7 @@ export async function getProjects({
     filters.push(eq(projects.deleted, false));
     if (cityId !== undefined) filters.push(eq(projects.cityId, cityId));
     if (projectId !== undefined) filters.push(eq(projects.id, projectId));
+    if (creatorId !== undefined) filters.push(eq(projects.creatorId, creatorId));
     const normalizedQuery = searchQuery?.trim();
     if (normalizedQuery) {
         const search = `%${normalizedQuery}%`;
@@ -203,6 +240,7 @@ export async function getProjects({
             imageUrl: projects.imageUrl,
             pageUrl: projects.pageUrl,
             livecodeUrl: projects.livecodeUrl,
+            creatorId: projects.creatorId,
             creatorName: user.name,
             githubUrl: profiles.githubUrl,
             linkedinUrl: profiles.linkedinUrl,
@@ -297,6 +335,7 @@ export async function getProjects({
                 name: row.cityName ?? row.cityCode,
                 slug: row.citySlug,
             },
+            creatorId: row.creatorId,
             creator,
             coauthors,
             extraCoauthors,
@@ -326,6 +365,7 @@ export async function getOwnProjects(creatorId: string): Promise<OwnProjectRecor
             livecodeUrl: projects.livecodeUrl,
             deleted: projects.deleted,
             createdAt: projects.createdAt,
+            creatorId: projects.creatorId,
             creatorName: user.name,
             githubUrl: profiles.githubUrl,
             linkedinUrl: profiles.linkedinUrl,
@@ -413,6 +453,7 @@ export async function getOwnProjects(creatorId: string): Promise<OwnProjectRecor
                 name: row.cityName ?? row.cityCode,
                 slug: row.citySlug,
             },
+            creatorId: row.creatorId,
             creator,
             coauthors,
             extraCoauthors,

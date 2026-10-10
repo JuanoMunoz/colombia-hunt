@@ -8,6 +8,7 @@ import { getDict } from "../../app/i18n/dictionaries";
 import { useLanguage, type Lang } from "../../app/i18n/LanguageContext";
 import { useSession } from "../../app/lib/auth-client";
 import { catalogApi, type ApiCategory, type ApiCity } from "../../lib/http-client";
+import SignOutButton from "../ui/SignOutButton";
 
 const LANGS: Lang[] = ["es", "en"];
 
@@ -42,21 +43,32 @@ export default function Navbar() {
   }, []);
 
   const [isAdmin, setIsAdmin] = useState(false);
+  const currentUserId = session?.user?.id;
+  const [adminCheckedFor, setAdminCheckedFor] = useState<string | undefined>(undefined);
+  // Ajuste durante el render (patrón React): al cambiar de usuario se
+  // revoca el flag admin sin setState síncrono dentro de un efecto.
+  if (currentUserId !== adminCheckedFor) {
+    setAdminCheckedFor(currentUserId);
+    setIsAdmin(false);
+  }
 
   useEffect(() => {
-    if (session?.user) {
-      fetch("/api/profile")
-        .then((res) => (res.ok ? res.json() : null))
-        .then((data: { profile?: { role?: string } } | null) => {
-          if (data?.profile?.role === "admin") {
-            setIsAdmin(true);
-          }
-        })
-        .catch(() => setIsAdmin(false));
-    } else {
-      setIsAdmin(false);
-    }
-  }, [session?.user]);
+    if (!currentUserId) return;
+    let active = true;
+    fetch("/api/profile")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data: { profile?: { role?: string } } | null) => {
+        if (active && data?.profile?.role === "admin") {
+          setIsAdmin(true);
+        }
+      })
+      .catch(() => {
+        if (active) setIsAdmin(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, [currentUserId]);
 
   const accountItem = sessionPending
     ? null
@@ -298,6 +310,7 @@ export default function Navbar() {
           {renderNavigationLinks(false)}
           {renderCitiesMenu(false)}
           {renderCategoriesMenu(false)}
+          {!sessionPending && session?.user ? <SignOutButton /> : null}
           {renderLanguageSwitcher(false)}
         </div>
         <button
@@ -335,6 +348,11 @@ export default function Navbar() {
           {renderNavigationLinks(true)}
           {renderCitiesMenu(true)}
           {renderCategoriesMenu(true)}
+          {!sessionPending && session?.user ? (
+            <div className="self-start">
+              <SignOutButton />
+            </div>
+          ) : null}
           {renderLanguageSwitcher(true)}
         </div>
       </nav>

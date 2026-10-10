@@ -95,6 +95,7 @@ export type ApiCategory = {
 
 export type ApiProfile = {
     name: string;
+    image: string | null;
     githubUrl: string | null;
     linkedinUrl: string | null;
     twitterUrl: string | null;

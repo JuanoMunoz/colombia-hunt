@@ -107,6 +107,20 @@ export type Dict = {
   profileOnboardingDescription: string;
   profileCreateProject: string;
   profileExploreProjects: string;
+  profilePhoto: string;
+  profilePhotoHint: string;
+  profilePhotoChange: string;
+  profilePhotoRemove: string;
+  profilePhotoUploading: string;
+  profilePhotoError: string;
+  profileAvatarFallback: (name: string) => string;
+  signOut: string;
+  signingOut: string;
+  signOutError: string;
+  publicProfileProjects: string;
+  publicProfileEmpty: string;
+  publicProfileBack: string;
+  publicProfileNotFound: string;
   createProjectTitle: string;
   createProjectDescription: string;
   createProjectName: string;
@@ -292,6 +306,20 @@ const es: Dict = {
     "Mantén tus datos al día, publica un proyecto o descubre lo que ya está creando la comunidad.",
   profileCreateProject: "Crear un proyecto",
   profileExploreProjects: "Ver proyectos",
+  profilePhoto: "Foto de perfil (opcional)",
+  profilePhotoHint: "PNG, JPG, WebP o GIF de hasta 2 MB. Se ajusta a 512 px.",
+  profilePhotoChange: "Cambiar foto",
+  profilePhotoRemove: "Quitar foto",
+  profilePhotoUploading: "Cargando foto…",
+  profilePhotoError: "No se pudo cargar la foto. Inténtalo de nuevo.",
+  profileAvatarFallback: (name) => `Inicial del perfil de ${name}`,
+  signOut: "Cerrar sesión",
+  signingOut: "Cerrando sesión…",
+  signOutError: "No se pudo cerrar la sesión. Inténtalo de nuevo.",
+  publicProfileProjects: "Proyectos",
+  publicProfileEmpty: "Esta persona aún no ha publicado proyectos.",
+  publicProfileBack: "Volver a explorar",
+  publicProfileNotFound: "Este perfil no existe o ya no está disponible.",
   createProjectTitle: "Publica tu proyecto",
   createProjectDescription:
     "Comparte qué estás construyendo para que más personas puedan descubrirlo.",
@@ -483,6 +511,20 @@ const en: Dict = {
     "Keep your details current, publish a project, or discover what the community is building.",
   profileCreateProject: "Create a project",
   profileExploreProjects: "View projects",
+  profilePhoto: "Profile photo (optional)",
+  profilePhotoHint: "PNG, JPG, WebP, or GIF up to 2 MB. Resized to 512 px.",
+  profilePhotoChange: "Change photo",
+  profilePhotoRemove: "Remove photo",
+  profilePhotoUploading: "Uploading photo…",
+  profilePhotoError: "The photo could not be uploaded. Please try again.",
+  profileAvatarFallback: (name) => `${name}'s profile initial`,
+  signOut: "Sign out",
+  signingOut: "Signing out…",
+  signOutError: "Could not sign out. Please try again.",
+  publicProfileProjects: "Projects",
+  publicProfileEmpty: "This person hasn't published any projects yet.",
+  publicProfileBack: "Back to explore",
+  publicProfileNotFound: "This profile doesn't exist or is no longer available.",
   createProjectTitle: "Publish your project",
   createProjectDescription:
     "Share what you're building so more people can discover it.",

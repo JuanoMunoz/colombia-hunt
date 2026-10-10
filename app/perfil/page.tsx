@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import ProfileForm from "../../components/sections/ProfileForm";
 import { getSession } from "../lib/get-session";
 import { db } from "@/db";
-import { profiles } from "@/db/schema";
+import { profiles, user } from "@/db/schema";
 import { getOwnProjects } from "../../lib/project-data";
 
 export const metadata: Metadata = {
@@ -21,6 +21,11 @@ export default async function ProfilePage() {
         .select()
         .from(profiles)
         .where(eq(profiles.userId, session.user.id))
+        .limit(1);
+    const [account] = await db
+        .select({ name: user.name, image: user.image })
+        .from(user)
+        .where(eq(user.id, session.user.id))
         .limit(1);
 
     const own = await getOwnProjects(session.user.id);
@@ -41,7 +46,9 @@ export default async function ProfilePage() {
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(pageJsonLd) }}
             />
             <ProfileForm
-                name={session.user.name}
+                userId={session.user.id}
+                name={account?.name ?? session.user.name}
+                image={account?.image ?? null}
                 githubUrl={profile?.githubUrl ?? ""}
                 linkedinUrl={profile?.linkedinUrl ?? ""}
                 twitterUrl={profile?.twitterUrl ?? ""}

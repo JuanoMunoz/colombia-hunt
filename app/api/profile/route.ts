@@ -6,6 +6,7 @@ import { auth } from "../../lib/auth";
 
 type EditableProfile = {
     name?: string;
+    image?: string | null;
     githubUrl?: string | null;
     linkedinUrl?: string | null;
     twitterUrl?: string | null;
@@ -13,6 +14,39 @@ type EditableProfile = {
     email?: string | null;
     whatsapp?: string | null;
 };
+
+const IMAGE_HOSTS = [
+    "utfs.io",
+    "ufs.sh",
+    "uploadthing.com",
+    "avatars.githubusercontent.com",
+    "googleusercontent.com",
+];
+
+function isAllowedImageHost(hostname: string): boolean {
+    const host = hostname.toLowerCase();
+    return IMAGE_HOSTS.some((allowed) => host === allowed || host.endsWith(`.${allowed}`));
+}
+
+function parseOptionalImage(value: unknown): string | null {
+    if (value === null || value === "") return null;
+    if (typeof value !== "string" || value.trim().length > 2048) {
+        throw new TypeError("La foto debe ser una URL válida de hasta 2048 caracteres.");
+    }
+    let url: URL;
+    try {
+        url = new URL(value.trim());
+    } catch {
+        throw new TypeError("La foto debe ser una URL válida.");
+    }
+    if (url.protocol !== "https:") {
+        throw new TypeError("La foto debe comenzar con https://.");
+    }
+    if (!isAllowedImageHost(url.hostname)) {
+        throw new TypeError("La foto debe provenir de un origen permitido.");
+    }
+    return url.toString();
+}
 
 function isRecord(value: unknown): value is Record<string, unknown> {
     return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -37,7 +71,7 @@ function parseOptionalUrl(value: unknown, field: string): string | null {
 }
 
 function parseProfile(value: unknown): EditableProfile {
-    const allowedFields = ["name", "githubUrl", "linkedinUrl", "twitterUrl", "instagramUrl", "email", "whatsapp"];
+    const allowedFields = ["name", "image", "githubUrl", "linkedinUrl", "twitterUrl", "instagramUrl", "email", "whatsapp"];
     if (!isRecord(value) || Object.keys(value).length === 0) {
         throw new TypeError("El cuerpo debe ser un objeto JSON con campos editables.");
     }
@@ -51,6 +85,9 @@ function parseProfile(value: unknown): EditableProfile {
             throw new TypeError("El nombre es obligatorio y admite hasta 80 caracteres.");
         }
         profile.name = value.name.trim();
+    }
+    if ("image" in value) {
+        profile.image = parseOptionalImage(value.image);
     }
 
     for (const field of ["githubUrl", "linkedinUrl", "twitterUrl", "instagramUrl"] as const) {
@@ -117,10 +154,16 @@ export async function GET() {
         .from(profiles)
         .where(eq(profiles.userId, currentUser.id))
         .limit(1);
+    const [account] = await db
+        .select({ name: user.name, image: user.image })
+        .from(user)
+        .where(eq(user.id, currentUser.id))
+        .limit(1);
 
     return Response.json({
         profile: {
-            name: currentUser.name,
+            name: account?.name ?? currentUser.name,
+            image: account?.image ?? null,
             role: profile?.role ?? "user",
             githubUrl: profile?.githubUrl ?? null,
             linkedinUrl: profile?.linkedinUrl ?? null,
@@ -163,8 +206,11 @@ export async function PATCH(request: Request) {
     };
 
     await db.transaction(async (tx) => {
-        if (changes.name !== undefined) {
-            await tx.update(user).set({ name: changes.name }).where(eq(user.id, currentUser.id));
+        const userChanges: { name?: string; image?: string | null } = {};
+        if (changes.name !== undefined) userChanges.name = changes.name;
+        if (changes.image !== undefined) userChanges.image = changes.image;
+        if (Object.keys(userChanges).length > 0) {
+            await tx.update(user).set(userChanges).where(eq(user.id, currentUser.id));
         }
 
         await tx
@@ -177,7 +223,7 @@ export async function PATCH(request: Request) {
     });
 
     const [updatedUser] = await db
-        .select({ name: user.name })
+        .select({ name: user.name, image: user.image })
         .from(user)
         .where(eq(user.id, currentUser.id))
         .limit(1);
@@ -199,6 +245,6 @@ export async function PATCH(request: Request) {
     }
 
     return Response.json({
-        profile: { name: updatedUser.name, ...updatedProfile },
+        profile: { name: updatedUser.name, image: updatedUser.image, ...updatedProfile },
     });
 }
