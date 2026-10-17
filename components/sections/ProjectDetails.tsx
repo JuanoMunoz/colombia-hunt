@@ -5,11 +5,13 @@ import { ViewTransition } from "react";
 import { useLanguage } from "../../app/i18n/LanguageContext";
 import { getDict } from "../../app/i18n/dictionaries";
 import type { ProjectRecord } from "../../lib/project-data";
-import { SocialIcon, HeartIcon, GlobeIcon, CodeIcon } from "../ui/icons";
+import { SocialIcon, HeartIcon, GlobeIcon, CodeIcon, BookmarkIcon } from "../ui/icons";
 import OptimizedImage from "../ui/OptimizedImage";
 import ShareProjectButton from "../ui/ShareProjectButton";
 import { useLike } from "../ui/use-like";
+import { useFavorite } from "../ui/use-favorite";
 import MarkdownRenderer from "../ui/MarkdownRenderer";
+import ProjectComments, { type ProjectCommentItem } from "./ProjectComments";
 
 export default function ProjectDetails({
   project,
@@ -17,12 +19,20 @@ export default function ProjectDetails({
   updated = false,
   hasSession = false,
   initialLiked = false,
+  initialFavorited = false,
+  comments = [],
+  currentUserId,
+  isAdmin = false,
 }: {
   project: ProjectRecord;
   created?: boolean;
   updated?: boolean;
   hasSession?: boolean;
   initialLiked?: boolean;
+  initialFavorited?: boolean;
+  comments?: ProjectCommentItem[];
+  currentUserId?: string;
+  isAdmin?: boolean;
 }) {
   const { lang } = useLanguage();
   const t = getDict(lang);
@@ -33,6 +43,11 @@ export default function ProjectDetails({
     project.id,
     initialLiked,
     project.likesCount,
+    hasSession,
+  );
+  const { favorited, toggle: toggleFavorite } = useFavorite(
+    project.id,
+    initialFavorited,
     hasSession,
   );
 
@@ -69,6 +84,19 @@ export default function ProjectDetails({
                 {project.title}
               </h1>
               <div className="flex shrink-0 items-center gap-1">
+                <button
+                  type="button"
+                  onClick={toggleFavorite}
+                  aria-label={favorited ? t.projectUnfavorite : t.projectFavorite}
+                  aria-pressed={favorited}
+                  className={`mt-1 flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-full border px-3 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--brand) ${
+                    favorited
+                      ? "border-(--brand)/30 bg-(--brand)/10 text-(--brand)"
+                      : "border-(--brand)/20 text-(--foreground)/60 hover:border-(--brand)/30 hover:bg-(--brand)/10 hover:text-(--brand)"
+                  }`}
+                >
+                  <BookmarkIcon filled={favorited} className="h-5 w-5" />
+                </button>
                 <ShareProjectButton
                   href={`/proyectos/${project.id}`}
                   title={project.title}
@@ -260,6 +288,14 @@ export default function ProjectDetails({
             </ul>
           </section>
         ) : null}
+
+        <ProjectComments
+          projectId={project.id}
+          initialComments={comments}
+          hasSession={hasSession}
+          currentUserId={currentUserId}
+          isAdmin={isAdmin}
+        />
       </article>
     </main>
   );

@@ -45,10 +45,12 @@ export default async function CityPage({
 
     if (!city) notFound();
 
-    const [initialPage, session] = await Promise.all([
-        getProjectsPage({ cityId: city.id, limit: 12 }),
-        getSession(),
-    ]);
+    const session = await getSession();
+    const initialPage = await getProjectsPage({
+        cityId: city.id,
+        limit: 12,
+        viewerId: session?.user?.id,
+    });
 
     const pageJsonLd = {
         "@context": "https://schema.org",

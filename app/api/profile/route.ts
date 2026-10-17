@@ -3,6 +3,11 @@ import { headers } from "next/headers";
 import { db } from "@/db";
 import { profiles, user } from "@/db/schema";
 import { auth } from "../../lib/auth";
+import {
+    attachUserImage,
+    deleteOwnedFiles,
+    deriveKeyFromUploadThingUrl,
+} from "@/lib/uploadthing-files";
 
 type EditableProfile = {
     name?: string;
@@ -13,6 +18,7 @@ type EditableProfile = {
     instagramUrl?: string | null;
     email?: string | null;
     whatsapp?: string | null;
+    marketingOptIn?: boolean;
 };
 
 const IMAGE_HOSTS = [
@@ -71,7 +77,7 @@ function parseOptionalUrl(value: unknown, field: string): string | null {
 }
 
 function parseProfile(value: unknown): EditableProfile {
-    const allowedFields = ["name", "image", "githubUrl", "linkedinUrl", "twitterUrl", "instagramUrl", "email", "whatsapp"];
+    const allowedFields = ["name", "image", "githubUrl", "linkedinUrl", "twitterUrl", "instagramUrl", "email", "whatsapp", "marketingOptIn"];
     if (!isRecord(value) || Object.keys(value).length === 0) {
         throw new TypeError("El cuerpo debe ser un objeto JSON con campos editables.");
     }
@@ -125,6 +131,13 @@ function parseProfile(value: unknown): EditableProfile {
         }
     }
 
+    if ("marketingOptIn" in value) {
+        if (typeof value.marketingOptIn !== "boolean") {
+            throw new TypeError("La preferencia de correos debe ser verdadero o falso.");
+        }
+        profile.marketingOptIn = value.marketingOptIn;
+    }
+
     return profile;
 }
 
@@ -155,7 +168,7 @@ export async function GET() {
         .where(eq(profiles.userId, currentUser.id))
         .limit(1);
     const [account] = await db
-        .select({ name: user.name, image: user.image })
+        .select({ name: user.name, image: user.image, marketingOptIn: user.marketingOptIn })
         .from(user)
         .where(eq(user.id, currentUser.id))
         .limit(1);
@@ -164,6 +177,7 @@ export async function GET() {
         profile: {
             name: account?.name ?? currentUser.name,
             image: account?.image ?? null,
+            marketingOptIn: account?.marketingOptIn ?? false,
             role: profile?.role ?? "user",
             githubUrl: profile?.githubUrl ?? null,
             linkedinUrl: profile?.linkedinUrl ?? null,
@@ -196,6 +210,13 @@ export async function PATCH(request: Request) {
         throw error;
     }
 
+    const [existingUser] = await db
+        .select({ image: user.image })
+        .from(user)
+        .where(eq(user.id, currentUser.id))
+        .limit(1);
+    const previousImage = existingUser?.image ?? null;
+
     const profileChanges = {
         ...(changes.githubUrl !== undefined ? { githubUrl: changes.githubUrl } : {}),
         ...(changes.linkedinUrl !== undefined ? { linkedinUrl: changes.linkedinUrl } : {}),
@@ -206,9 +227,10 @@ export async function PATCH(request: Request) {
     };
 
     await db.transaction(async (tx) => {
-        const userChanges: { name?: string; image?: string | null } = {};
+        const userChanges: { name?: string; image?: string | null; marketingOptIn?: boolean } = {};
         if (changes.name !== undefined) userChanges.name = changes.name;
         if (changes.image !== undefined) userChanges.image = changes.image;
+        if (changes.marketingOptIn !== undefined) userChanges.marketingOptIn = changes.marketingOptIn;
         if (Object.keys(userChanges).length > 0) {
             await tx.update(user).set(userChanges).where(eq(user.id, currentUser.id));
         }
@@ -222,8 +244,22 @@ export async function PATCH(request: Request) {
             });
     });
 
+    // La foto nueva queda en uso; la anterior, si es un archivo del usuario,
+    // se borra de UploadThing. Las fotos de OAuth no se tocan (no son claves).
+    if (changes.image !== undefined) {
+        if (changes.image) {
+            await attachUserImage(currentUser.id, changes.image);
+        }
+        if (previousImage && previousImage !== changes.image) {
+            const key = deriveKeyFromUploadThingUrl(previousImage);
+            if (key) {
+                await deleteOwnedFiles(currentUser.id, [key], { allowAttached: true });
+            }
+        }
+    }
+
     const [updatedUser] = await db
-        .select({ name: user.name, image: user.image })
+        .select({ name: user.name, image: user.image, marketingOptIn: user.marketingOptIn })
         .from(user)
         .where(eq(user.id, currentUser.id))
         .limit(1);
@@ -245,6 +281,11 @@ export async function PATCH(request: Request) {
     }
 
     return Response.json({
-        profile: { name: updatedUser.name, image: updatedUser.image, ...updatedProfile },
+        profile: {
+            name: updatedUser.name,
+            image: updatedUser.image,
+            marketingOptIn: updatedUser.marketingOptIn,
+            ...updatedProfile,
+        },
     });
 }

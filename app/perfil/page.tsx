@@ -5,7 +5,7 @@ import ProfileForm from "../../components/sections/ProfileForm";
 import { getSession } from "../lib/get-session";
 import { db } from "@/db";
 import { profiles, user } from "@/db/schema";
-import { getOwnProjects } from "../../lib/project-data";
+import { getFavoriteProjects, getOwnProjects } from "../../lib/project-data";
 
 export const metadata: Metadata = {
     title: "Tu perfil | Colombia Hunt",
@@ -23,12 +23,15 @@ export default async function ProfilePage() {
         .where(eq(profiles.userId, session.user.id))
         .limit(1);
     const [account] = await db
-        .select({ name: user.name, image: user.image })
+        .select({ name: user.name, image: user.image, marketingOptIn: user.marketingOptIn })
         .from(user)
         .where(eq(user.id, session.user.id))
         .limit(1);
 
-    const own = await getOwnProjects(session.user.id);
+    const [own, favorites] = await Promise.all([
+        getOwnProjects(session.user.id),
+        getFavoriteProjects(session.user.id),
+    ]);
     const ownActive = own.filter((project) => !project.deleted);
 
     const pageJsonLd = {
@@ -55,11 +58,13 @@ export default async function ProfilePage() {
                 instagramUrl={profile?.instagramUrl ?? ""}
                 email={profile?.email ?? ""}
                 whatsapp={profile?.whatsapp ?? ""}
+                marketingOptIn={account?.marketingOptIn ?? false}
                 ownTotal={ownActive.length}
                 ownRecent={ownActive.slice(0, 3).map((project) => ({
                     id: project.id,
                     title: project.title,
                 }))}
+                favorites={favorites}
             />
         </main>
     );

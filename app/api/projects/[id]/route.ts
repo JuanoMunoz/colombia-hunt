@@ -1,8 +1,13 @@
-import { and, eq, inArray } from "drizzle-orm";
+import { and, eq, inArray, ne } from "drizzle-orm";
 import { headers } from "next/headers";
 import { db } from "@/db";
 import { categories, cities, projectCategories, profiles, projects } from "@/db/schema";
 import { auth } from "../../../lib/auth";
+import {
+    attachProjectImage,
+    deleteOwnedFiles,
+    deriveKeyFromUploadThingUrl,
+} from "@/lib/uploadthing-files";
 import { apiError, parseId } from "../../_lib/catalog";
 
 type Context = { params: Promise<{ id: string }> };
@@ -183,6 +188,7 @@ export async function PATCH(request: Request, { params }: Context) {
             id: projects.id,
             creatorId: projects.creatorId,
             deleted: projects.deleted,
+            imageUrl: projects.imageUrl,
         })
         .from(projects)
         .where(eq(projects.id, id))
@@ -293,6 +299,26 @@ export async function PATCH(request: Request, { params }: Context) {
 
     if (!updated) {
         return apiError("Proyecto no encontrado.", 404);
+    }
+
+    // La imagen nueva queda en uso; la anterior, si ya no la usa ningún
+    // proyecto, se borra de UploadThing para no dejar huérfanos.
+    if (patch.imageUrl) {
+        await attachProjectImage(session.user.id, id, patch.imageUrl);
+    }
+    const previousImage = project.imageUrl;
+    if (previousImage && previousImage !== patch.imageUrl) {
+        const key = deriveKeyFromUploadThingUrl(previousImage);
+        if (key) {
+            const [reused] = await db
+                .select({ id: projects.id })
+                .from(projects)
+                .where(and(eq(projects.imageUrl, previousImage), ne(projects.id, id)))
+                .limit(1);
+            if (!reused) {
+                await deleteOwnedFiles(session.user.id, [key], { allowAttached: true });
+            }
+        }
     }
 
     return Response.json({ projectId: updated.id });

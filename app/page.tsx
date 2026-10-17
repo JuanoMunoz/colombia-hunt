@@ -52,11 +52,11 @@ type HomeProps = {
 
 export default async function Home({ searchParams }: HomeProps) {
   const { q } = await searchParams;
+  const session = await getSession();
 
-  const [initialPage, allCategories, session] = await Promise.all([
-    getProjectsPage({ limit: 12, query: q }),
+  const [initialPage, allCategories] = await Promise.all([
+    getProjectsPage({ limit: 12, query: q, viewerId: session?.user?.id }),
     getAllCategories("es"),
-    getSession(),
   ]);
 
   return (

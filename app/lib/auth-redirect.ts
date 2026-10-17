@@ -5,6 +5,7 @@ const exactAllowedNext = new Set([
     "/mis-proyectos",
     "/perfil",
     "/admin",
+    "/consentimiento",
 ]);
 
 const editProjectPattern = /^\/proyectos\/[1-9]\d*\/editar$/;

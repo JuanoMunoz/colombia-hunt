@@ -5,6 +5,8 @@ import { useState, type FormEvent } from "react";
 import { signIn, signUp } from "../../app/lib/auth-client";
 import { getDict } from "../../app/i18n/dictionaries";
 import { useLanguage } from "../../app/i18n/LanguageContext";
+import { PRIVACY_POLICY_VERSION } from "../../lib/legal";
+import LegalConsentCheckboxes from "./LegalConsentCheckboxes";
 
 type AuthFormProps = {
   mode: "login" | "register";
@@ -19,18 +21,31 @@ export default function AuthForm({ mode, callbackURL }: AuthFormProps) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [marketingOptIn, setMarketingOptIn] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const submit = async (e: FormEvent) => {
     e.preventDefault();
     setError("");
+    if (mode === "register" && !acceptedTerms) {
+      setError(t.registerTermsRequired);
+      return;
+    }
     setLoading(true);
     try {
       const res =
         mode === "login"
           ? await signIn.email({ email, password })
-          : await signUp.email({ email, password, name });
+          : await signUp.email({
+              email,
+              password,
+              name,
+              marketingOptIn,
+              termsAcceptedAt: new Date().toISOString(),
+              termsVersion: PRIVACY_POLICY_VERSION,
+            });
       if (res.error) {
         setError(t.authError);
       } else {
@@ -93,6 +108,15 @@ export default function AuthForm({ mode, callbackURL }: AuthFormProps) {
           className={input}
         />
       </div>
+      {mode === "register" ? (
+        <LegalConsentCheckboxes
+          idPrefix="auth"
+          acceptedTerms={acceptedTerms}
+          onAcceptedTermsChange={setAcceptedTerms}
+          marketingOptIn={marketingOptIn}
+          onMarketingOptInChange={setMarketingOptIn}
+        />
+      ) : null}
       {error ? (
         <p role="alert" className="text-sm font-medium text-(--secondary)">
           {error}

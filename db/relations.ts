@@ -14,6 +14,18 @@ export const relations = defineRelations(schema, (r) => ({
             from: r.user.id,
             to: r.projectLikes.userId,
         }),
+        favorites: r.many.projectFavorites({
+            from: r.user.id,
+            to: r.projectFavorites.userId,
+        }),
+        comments: r.many.projectComments({
+            from: r.user.id,
+            to: r.projectComments.userId,
+        }),
+        uploads: r.many.uploadedFiles({
+            from: r.user.id,
+            to: r.uploadedFiles.userId,
+        }),
     },
     session: {
         user: r.one.user({
@@ -76,6 +88,12 @@ export const relations = defineRelations(schema, (r) => ({
             to: r.categories.id.through(r.projectCategories.categoryId),
         }),
         likes: r.many.projectLikes(),
+        favorites: r.many.projectFavorites(),
+        comments: r.many.projectComments(),
+        uploads: r.many.uploadedFiles({
+            from: r.projects.id,
+            to: r.uploadedFiles.projectId,
+        }),
     },
     projectCategories: {
         project: r.one.projects({
@@ -100,6 +118,36 @@ export const relations = defineRelations(schema, (r) => ({
         }),
         project: r.one.projects({
             from: r.projectLikes.projectId,
+            to: r.projects.id,
+        }),
+    },
+    projectFavorites: {
+        user: r.one.user({
+            from: r.projectFavorites.userId,
+            to: r.user.id,
+        }),
+        project: r.one.projects({
+            from: r.projectFavorites.projectId,
+            to: r.projects.id,
+        }),
+    },
+    projectComments: {
+        user: r.one.user({
+            from: r.projectComments.userId,
+            to: r.user.id,
+        }),
+        project: r.one.projects({
+            from: r.projectComments.projectId,
+            to: r.projects.id,
+        }),
+    },
+    uploadedFiles: {
+        user: r.one.user({
+            from: r.uploadedFiles.userId,
+            to: r.user.id,
+        }),
+        project: r.one.projects({
+            from: r.uploadedFiles.projectId,
             to: r.projects.id,
         }),
     },

@@ -102,6 +102,7 @@ export type ApiProfile = {
     instagramUrl: string | null;
     email: string | null;
     whatsapp: string | null;
+    marketingOptIn: boolean;
 };
 
 export type CreateProjectCoauthorInput = {
@@ -136,6 +137,20 @@ export const catalogApi = {
         list(options?: HttpClientOptions) {
             return httpClient.get<ApiCategory[]>("/api/categories", options);
         },
+    },
+};
+
+export const uploadApi = {
+    /**
+     * Borra en UploadThing archivos huérfanos del usuario (imagen reemplazada
+     * o subida abandonada). El servidor solo borra los que no están en uso.
+     */
+    remove(keys: string[], options?: HttpClientOptions) {
+        return httpClient.post<{ deleted: number; skipped: number }, { keys: string[] }>(
+            "/api/uploadthing/files/delete",
+            { keys },
+            options,
+        );
     },
 };
 

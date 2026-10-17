@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import { db } from "@/db";
 import { categories, cities, projectCategories, projectCoauthors, projects } from "@/db/schema";
 import { auth } from "../../lib/auth";
+import { attachProjectImage } from "@/lib/uploadthing-files";
 import { apiError, readJson } from "../_lib/catalog";
 import { handleProjectsList } from "./list/route";
 
@@ -283,6 +284,11 @@ export async function POST(request: Request) {
         }
         return created.id;
     });
+
+    // La imagen pasa a estar en uso: ya no será candidata a borrado.
+    if (project.imageUrl) {
+        await attachProjectImage(session.user.id, projectId, project.imageUrl);
+    }
 
     return Response.json(
         { projectId },

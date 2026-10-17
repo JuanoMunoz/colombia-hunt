@@ -63,6 +63,23 @@ export type Dict = {
   socialGithub: string;
   socialGoogle: string;
   authError: string;
+  registerTermsLabel: string;
+  registerTermsLink: string;
+  registerTermsRequired: string;
+  registerRequiredTag: string;
+  registerOptionalTag: string;
+  registerMarketingLabel: string;
+  consentTitle: string;
+  consentIntro: string;
+  consentSubmit: string;
+  consentSubmitting: string;
+  consentError: string;
+  consentSessionExpired: string;
+  profileEmailPrefsTitle: string;
+  profileMarketingLabel: string;
+  profileMarketingHelp: string;
+  footerPolicy: string;
+  footerRights: string;
   profile: string;
   projectsHeading: string;
   projectsInCity: (city: string) => string;
@@ -85,6 +102,32 @@ export type Dict = {
   projectAuthor: string;
   projectCoauthorsTitle: string;
   projectCoauthorsMore: (count: number) => string;
+  projectFavorite: string;
+  projectUnfavorite: string;
+  commentsTitle: string;
+  commentsEmpty: string;
+  commentFormLabel: string;
+  commentPlaceholder: string;
+  commentSubmit: string;
+  commentSubmitting: string;
+  commentPosted: string;
+  commentInvalid: string;
+  commentError: string;
+  commentSessionExpired: string;
+  commentLoginCta: string;
+  commentCount: (count: number, max: number) => string;
+  commentDelete: string;
+  commentDeleteAria: (author: string) => string;
+  commentDeleteDialogTitle: string;
+  commentDeleteMessage: string;
+  commentDeleteCancel: string;
+  commentDeleteConfirm: string;
+  commentDeleting: string;
+  commentDeleted: string;
+  commentDeleteError: string;
+  profileFavoritesTitle: string;
+  profileFavoritesEmpty: string;
+  profileFavoritesExplore: string;
   profileTitle: string;
   profileDescription: string;
   profilePersonalInfo: string;
@@ -262,6 +305,28 @@ const es: Dict = {
   socialGithub: "Continuar con GitHub",
   socialGoogle: "Continuar con Google",
   authError: "Revisa tus datos e inténtalo de nuevo.",
+  registerTermsLabel: "Acepto la ",
+  registerTermsLink: "política de tratamiento de datos personales",
+  registerTermsRequired:
+    "Debes aceptar la política de tratamiento de datos para crear tu cuenta.",
+  registerRequiredTag: "obligatorio",
+  registerOptionalTag: "opcional",
+  registerMarketingLabel:
+    "Quiero recibir correos con proyectos interesantes",
+  consentTitle: "Un paso más",
+  consentIntro:
+    "Antes de continuar, confirma la autorización para el tratamiento de tus datos personales.",
+  consentSubmit: "Aceptar y continuar",
+  consentSubmitting: "Guardando…",
+  consentError: "No se pudo guardar tu aceptación. Inténtalo de nuevo.",
+  consentSessionExpired:
+    "Tu sesión expiró. Inicia sesión de nuevo para continuar.",
+  profileEmailPrefsTitle: "Preferencias de correo",
+  profileMarketingLabel: "Recibir correos con proyectos interesantes",
+  profileMarketingHelp:
+    "Te enviaremos ocasionalmente proyectos destacados. Puedes desactivarlo cuando quieras.",
+  footerPolicy: "Política de datos",
+  footerRights: "Colombia Hunt. Hecho en Colombia.",
   profile: "Perfil",
   projectsHeading: "Proyectos de la comunidad",
   projectsInCity: (city) => `Proyectos de ${city}`,
@@ -284,6 +349,34 @@ const es: Dict = {
   projectAuthor: "Información del perfil",
   projectCoauthorsTitle: "Coautores",
   projectCoauthorsMore: (count) => (count === 1 ? "+1 persona" : `+${count} personas`),
+  projectFavorite: "Guardar en favoritos",
+  projectUnfavorite: "Quitar de favoritos",
+  commentsTitle: "Comentarios",
+  commentsEmpty: "Todavía no hay comentarios. Sé la primera persona en comentar.",
+  commentFormLabel: "Escribe un comentario",
+  commentPlaceholder: "Comparte lo que piensas de este proyecto…",
+  commentSubmit: "Comentar",
+  commentSubmitting: "Enviando…",
+  commentPosted: "Comentario publicado.",
+  commentInvalid: "Escribe un comentario antes de enviarlo.",
+  commentError: "No se pudo publicar el comentario. Inténtalo de nuevo.",
+  commentSessionExpired: "Tu sesión expiró. Inicia sesión y vuelve a intentarlo.",
+  commentLoginCta: "Inicia sesión para comentar",
+  commentCount: (count, max) => `${count}/${max} caracteres`,
+  commentDelete: "Borrar",
+  commentDeleteAria: (author) => `Borrar el comentario de ${author}`,
+  commentDeleteDialogTitle: "Borrar comentario",
+  commentDeleteMessage:
+    "¿Quieres borrar este comentario? Dejará de aparecer en el proyecto.",
+  commentDeleteCancel: "Cancelar",
+  commentDeleteConfirm: "Sí, borrar",
+  commentDeleting: "Borrando…",
+  commentDeleted: "Comentario borrado.",
+  commentDeleteError: "No se pudo borrar el comentario. Inténtalo de nuevo.",
+  profileFavoritesTitle: "Favoritos",
+  profileFavoritesEmpty:
+    "Todavía no has guardado proyectos. Explora y guarda los que más te gusten.",
+  profileFavoritesExplore: "Explorar proyectos",
   profileTitle: "Tu perfil",
   profileDescription: "Actualiza tu nombre y los enlaces que compartes.",
   profilePersonalInfo: "Datos personales",
@@ -468,6 +561,26 @@ const en: Dict = {
   socialGithub: "Continue with GitHub",
   socialGoogle: "Continue with Google",
   authError: "Check your details and try again.",
+  registerTermsLabel: "I accept the ",
+  registerTermsLink: "personal data processing policy",
+  registerTermsRequired:
+    "You must accept the data processing policy to create your account.",
+  registerRequiredTag: "required",
+  registerOptionalTag: "optional",
+  registerMarketingLabel: "Send me emails with interesting projects",
+  consentTitle: "One more step",
+  consentIntro:
+    "Before continuing, confirm your authorization for the processing of your personal data.",
+  consentSubmit: "Accept and continue",
+  consentSubmitting: "Saving…",
+  consentError: "We couldn't save your acceptance. Please try again.",
+  consentSessionExpired: "Your session expired. Sign in again to continue.",
+  profileEmailPrefsTitle: "Email preferences",
+  profileMarketingLabel: "Receive emails with interesting projects",
+  profileMarketingHelp:
+    "We'll occasionally send you featured projects. You can turn this off anytime.",
+  footerPolicy: "Data policy",
+  footerRights: "Colombia Hunt. Made in Colombia.",
   profile: "Profile",
   projectsHeading: "Community projects",
   projectsInCity: (city) => `Projects in ${city}`,
@@ -490,6 +603,34 @@ const en: Dict = {
   projectAuthor: "Profile information",
   projectCoauthorsTitle: "Co-authors",
   projectCoauthorsMore: (count) => (count === 1 ? "+1 person" : `+${count} people`),
+  projectFavorite: "Save to favorites",
+  projectUnfavorite: "Remove from favorites",
+  commentsTitle: "Comments",
+  commentsEmpty: "There are no comments yet. Be the first to comment.",
+  commentFormLabel: "Write a comment",
+  commentPlaceholder: "Share what you think about this project…",
+  commentSubmit: "Comment",
+  commentSubmitting: "Posting…",
+  commentPosted: "Comment posted.",
+  commentInvalid: "Write a comment before submitting.",
+  commentError: "Could not post your comment. Please try again.",
+  commentSessionExpired: "Your session expired. Sign in and try again.",
+  commentLoginCta: "Sign in to comment",
+  commentCount: (count, max) => `${count}/${max} characters`,
+  commentDelete: "Delete",
+  commentDeleteAria: (author) => `Delete the comment by ${author}`,
+  commentDeleteDialogTitle: "Delete comment",
+  commentDeleteMessage:
+    "Delete this comment? It will no longer appear on the project.",
+  commentDeleteCancel: "Cancel",
+  commentDeleteConfirm: "Yes, delete",
+  commentDeleting: "Deleting…",
+  commentDeleted: "Comment deleted.",
+  commentDeleteError: "Could not delete the comment. Please try again.",
+  profileFavoritesTitle: "Favorites",
+  profileFavoritesEmpty:
+    "You haven't saved any projects yet. Explore and save the ones you like most.",
+  profileFavoritesExplore: "Explore projects",
   profileTitle: "Your profile",
   profileDescription: "Update your name and the links you share.",
   profilePersonalInfo: "Personal details",

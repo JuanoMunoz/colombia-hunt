@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist_Mono } from "next/font/google";
 import localFont from "next/font/local";
+import Footer from "../components/layout/Footer";
 import Navbar from "../components/layout/Navbar";
 import { LanguageProvider } from "./i18n/LanguageContext";
 import "./globals.css";
@@ -60,6 +61,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <div id="contenido" tabIndex={-1} className="flex flex-1 flex-col">
             {children}
           </div>
+          <Footer />
         </LanguageProvider>
       </body>
     </html>

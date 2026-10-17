@@ -4,6 +4,26 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
 import * as schema from "@/db/schema"
 export const auth = betterAuth({
+  user: {
+    additionalFields: {
+      marketingOptIn: {
+        type: "boolean",
+        required: false,
+        defaultValue: false,
+        input: true,
+      },
+      termsAcceptedAt: {
+        type: "string",
+        required: false,
+        input: true,
+      },
+      termsVersion: {
+        type: "string",
+        required: false,
+        input: true,
+      },
+    },
+  },
   emailAndPassword: {
     enabled: true,
   },

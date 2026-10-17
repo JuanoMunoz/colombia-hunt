@@ -7,9 +7,12 @@ import { getDict } from "../../app/i18n/dictionaries";
 import { HttpClientError, profileApi } from "../../lib/http-client";
 import { compressImage } from "../../lib/images/compress";
 import { useUploadThing } from "../../lib/uploadthing";
+import type { ProjectRecord } from "../../lib/project-data";
 import { SocialIcon } from "../ui/icons";
 import ProfileAvatar from "../ui/ProfileAvatar";
 import SignOutButton from "../ui/SignOutButton";
+import { useUploadCleanup } from "../ui/use-upload-cleanup";
+import ProfileFavorites from "./ProfileFavorites";
 
 type OwnSummary = {
     id: number;
@@ -26,8 +29,10 @@ type ProfileFormProps = {
     instagramUrl: string;
     email: string;
     whatsapp: string;
+    marketingOptIn?: boolean;
     ownTotal?: number;
     ownRecent?: OwnSummary[];
+    favorites?: ProjectRecord[];
 };
 
 const inputClassName =
@@ -43,8 +48,10 @@ export default function ProfileForm({
     instagramUrl,
     email,
     whatsapp,
+    marketingOptIn = false,
     ownTotal = 0,
     ownRecent = [],
+    favorites = [],
 }: ProfileFormProps) {
     const { lang } = useLanguage();
     const t = getDict(lang);
@@ -53,10 +60,12 @@ export default function ProfileForm({
         message: string;
     }>({ kind: "idle", message: "" });
     const [imageUrl, setImageUrl] = useState<string | null>(image);
+    const [emailOptIn, setEmailOptIn] = useState(marketingOptIn);
     const [photoState, setPhotoState] = useState<{
         kind: "idle" | "uploading" | "error";
     }>({ kind: "idle" });
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const { replaceUpload, discardPending, markSaved } = useUploadCleanup();
 
     const { startUpload, isUploading } = useUploadThing("avatarImage", {
         onClientUploadComplete: (files) => {
@@ -65,6 +74,7 @@ export default function ProfileForm({
                 setPhotoState({ kind: "error" });
                 return;
             }
+            replaceUpload(uploadedFile.key);
             setImageUrl(uploadedFile.url);
             setPhotoState({ kind: "idle" });
         },
@@ -99,7 +109,9 @@ export default function ProfileForm({
                 instagramUrl: String(formData.get("instagramUrl") ?? ""),
                 email: String(formData.get("email") ?? ""),
                 whatsapp: String(formData.get("whatsapp") ?? ""),
+                marketingOptIn: emailOptIn,
             });
+            markSaved();
             setStatus({ kind: "success", message: t.profileSaved });
         } catch (error) {
             if (error instanceof HttpClientError && error.status === 401) {
@@ -231,6 +243,18 @@ export default function ProfileForm({
                         </Link>
                     </div>
                 </section>
+                <section
+                    aria-labelledby="favoritos-resumen"
+                    className="border-b border-(--brand)/15 py-8"
+                >
+                    <h2
+                        id="favoritos-resumen"
+                        className="text-lg font-semibold leading-7 text-(--foreground)"
+                    >
+                        {t.profileFavoritesTitle}
+                    </h2>
+                    <ProfileFavorites initial={favorites} />
+                </section>
                 <form onSubmit={handleSubmit} className="mt-8 flex flex-col gap-6">
                     <section aria-labelledby="datos-personales" className="flex flex-col gap-4">
                         <h2
@@ -297,7 +321,10 @@ export default function ProfileForm({
                                         <button
                                             type="button"
                                             disabled={uploading}
-                                            onClick={() => setImageUrl(null)}
+                                            onClick={() => {
+                                                discardPending();
+                                                setImageUrl(null);
+                                            }}
                                             className="inline-flex min-h-11 items-center justify-center rounded-md px-4 text-sm font-semibold text-(--secondary) transition-colors hover:bg-(--secondary)/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--brand) disabled:cursor-wait disabled:opacity-70"
                                         >
                                             {t.profilePhotoRemove}
@@ -414,6 +441,39 @@ export default function ProfileForm({
                                 />
                                 <p id="whatsapp-hint" className="text-sm text-(--foreground)/70">
                                     {t.profileWhatsappHint}
+                                </p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section
+                        aria-labelledby="preferencias-correo"
+                        className="flex flex-col gap-4"
+                    >
+                        <h2
+                            id="preferencias-correo"
+                            className="text-lg font-semibold leading-7 text-(--foreground)"
+                        >
+                            {t.profileEmailPrefsTitle}
+                        </h2>
+                        <div className="flex min-h-11 items-start gap-3">
+                            <input
+                                id="marketingOptIn"
+                                type="checkbox"
+                                checked={emailOptIn}
+                                onChange={(event) => setEmailOptIn(event.target.checked)}
+                                aria-describedby="marketingOptIn-hint"
+                                className="mt-0.5 size-5 shrink-0 rounded border border-(--brand)/40 accent-(--brand) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--brand)"
+                            />
+                            <div className="flex flex-col gap-1">
+                                <label
+                                    htmlFor="marketingOptIn"
+                                    className="cursor-pointer text-sm font-medium text-(--foreground)"
+                                >
+                                    {t.profileMarketingLabel}
+                                </label>
+                                <p id="marketingOptIn-hint" className="text-sm text-(--foreground)/70">
+                                    {t.profileMarketingHelp}
                                 </p>
                             </div>
                         </div>

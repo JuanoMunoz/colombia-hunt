@@ -5,10 +5,11 @@ import { ViewTransition } from "react";
 import { useLanguage } from "../../app/i18n/LanguageContext";
 import { getDict } from "../../app/i18n/dictionaries";
 import type { ProjectRecord } from "../../lib/project-data";
-import { SocialIcon, HeartIcon } from "./icons";
+import { SocialIcon, HeartIcon, BookmarkIcon } from "./icons";
 import OptimizedImage from "./OptimizedImage";
 import ShareProjectButton from "./ShareProjectButton";
 import { useLike } from "./use-like";
+import { useFavorite } from "./use-favorite";
 
 type ProjectCardProps = {
   project: ProjectRecord;
@@ -16,12 +17,18 @@ type ProjectCardProps = {
   hasSession?: boolean;
   /** Pass true when the current user has already liked this project */
   initialLiked?: boolean;
+  /** Pass true when the current user has already saved this project as favorite */
+  initialFavorited?: boolean;
+  /** Notifies the parent container when the favorite state changes */
+  onFavoriteToggle?: (favorited: boolean) => void;
 };
 
 export default function ProjectCard({
   project,
   hasSession = false,
   initialLiked = false,
+  initialFavorited = false,
+  onFavoriteToggle,
 }: ProjectCardProps) {
   const { lang } = useLanguage();
   const t = getDict(lang);
@@ -32,6 +39,17 @@ export default function ProjectCard({
     project.likesCount,
     hasSession,
   );
+  const { favorited, toggle: toggleFavorite } = useFavorite(
+    project.id,
+    initialFavorited,
+    hasSession,
+  );
+
+  function handleFavorite() {
+    const next = !favorited;
+    toggleFavorite();
+    onFavoriteToggle?.(next);
+  }
 
   return (
     <article className="flex min-w-0 flex-col gap-4">
@@ -112,21 +130,38 @@ export default function ProjectCard({
           )}
         </div>
 
-        {/* Like button */}
-        <button
-          type="button"
-          onClick={toggle}
-          aria-label={liked ? t.projectUnlike : t.projectLike}
-          aria-pressed={liked}
-          className={`flex min-h-11 min-w-11 shrink-0 items-center justify-center gap-1 rounded-full px-2 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--brand) ${
-            liked
-              ? "text-(--secondary)"
-              : "text-(--foreground)/50 hover:text-(--secondary)"
-          }`}
-        >
-          <HeartIcon filled={liked} className="h-5 w-5" />
-          <span className="tabular-nums">{count}</span>
-        </button>
+        <div className="flex shrink-0 items-center gap-1">
+          {/* Favorite (private bookmark) button */}
+          <button
+            type="button"
+            onClick={handleFavorite}
+            aria-label={favorited ? t.projectUnfavorite : t.projectFavorite}
+            aria-pressed={favorited}
+            className={`flex min-h-11 min-w-11 items-center justify-center rounded-full transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--brand) ${
+              favorited
+                ? "text-(--brand)"
+                : "text-(--foreground)/50 hover:text-(--brand)"
+            }`}
+          >
+            <BookmarkIcon filled={favorited} className="h-5 w-5" />
+          </button>
+
+          {/* Like button */}
+          <button
+            type="button"
+            onClick={toggle}
+            aria-label={liked ? t.projectUnlike : t.projectLike}
+            aria-pressed={liked}
+            className={`flex min-h-11 min-w-11 shrink-0 items-center justify-center gap-1 rounded-full px-2 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--brand) ${
+              liked
+                ? "text-(--secondary)"
+                : "text-(--foreground)/50 hover:text-(--secondary)"
+            }`}
+          >
+            <HeartIcon filled={liked} className="h-5 w-5" />
+            <span className="tabular-nums">{count}</span>
+          </button>
+        </div>
       </div>
     </article>
   );

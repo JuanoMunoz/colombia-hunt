@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="es" data-resolution="square">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1080" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      @font-face { font-family: 'Lexend'; src: url('assets/fonts/lexend-latin-400-normal.woff2') format('woff2'); font-weight: 400; font-display: swap; }
+      @font-face { font-family: 'Lexend'; src: url('assets/fonts/lexend-latin-700-normal.woff2') format('woff2'); font-weight: 700; font-display: swap; }
+      @font-face { font-family: 'Lexend'; src: url('assets/fonts/lexend-latin-800-normal.woff2') format('woff2'); font-weight: 800; font-display: swap; }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body {
+        margin: 0; width: 1080px; height: 1080px; overflow: hidden;
+        background: #003087;
+        font-family: Lexend, Arial, Helvetica, sans-serif;
+      }
+      #root { width: 100%; height: 100%; position: relative; }
+      .clip { position: absolute; inset: 0; width: 1080px; height: 1080px; overflow: hidden; }
+      .center {
+        position: absolute; inset: 0; display: flex; flex-direction: column;
+        align-items: center; justify-content: center; text-align: center;
+        padding: 80px;
+      }
+      .hook-bg { background: #931621; }
+      .light-bg { background: #FBFAF8; }
+      .brand-bg { background: #003087; }
+      .hook-title {
+        color: #FBFAF8; font-weight: 800; letter-spacing: -0.02em;
+        font-size: 110px; line-height: 1.02;
+      }
+      .hook-sub {
+        margin-top: 28px; color: #FFCD00; font-weight: 700;
+        font-size: 46px; letter-spacing: 0.01em;
+      }
+      .hook-bar { margin-top: 40px; width: 420px; height: 14px; background: #FFCD00; border-radius: 999px; }
+      .eyebrow {
+        font-size: 34px; font-weight: 700; letter-spacing: 0.14em;
+        color: #003087; text-transform: uppercase;
+      }
+      .big {
+        margin-top: 24px; color: #003087; font-weight: 800;
+        font-size: 96px; line-height: 1.05; letter-spacing: -0.02em;
+      }
+      .big .dot { color: #931621; }
+      .sub {
+        margin-top: 28px; color: #1A1C1E; font-size: 36px; line-height: 1.45; max-width: 860px;
+      }
+      .logo { width: 340px; height: auto; }
+      .logo-sm { width: 300px; height: auto; }
+      .tricolor { position: absolute; left: 0; right: 0; bottom: 0; height: 26px; display: flex; }
+      .tricolor span:nth-child(1) { flex: 1; background: #FFCD00; }
+      .tricolor span:nth-child(2) { flex: 1; background: #003087; }
+      .tricolor span:nth-child(3) { flex: 1; background: #931621; }
+      .on-brand-title { color: #FBFAF8; font-weight: 800; font-size: 84px; line-height: 1.12; letter-spacing: -0.015em; }
+      .on-brand-title .co { color: #FFCD00; }
+      .on-brand-sub { margin-top: 30px; color: #FBFAF8; font-size: 37px; line-height: 1.5; max-width: 880px; opacity: 0.96; }
+      .steps { display: flex; gap: 28px; margin-top: 48px; }
+      .step {
+        width: 280px; border: 3px solid rgba(0,48,135,0.18); border-radius: 28px;
+        background: #FFFFFF; padding: 30px 22px;
+      }
+      .step b { display: block; font-size: 60px; color: #931621; }
+      .step strong { display: block; margin-top: 10px; font-size: 38px; color: #003087; }
+      .step span { display: block; margin-top: 10px; font-size: 30px; color: #1A1C1E; }
+      .cta-pill {
+        margin-top: 44px; background: #FFCD00; color: #1A1C1E;
+        font-weight: 800; font-size: 52px; padding: 26px 64px; border-radius: 999px;
+      }
+      .url { margin-top: 30px; color: #FBFAF8; font-size: 40px; font-weight: 700; }
+      .final-sub { margin-top: 18px; color: #FBFAF8; font-size: 33px; opacity: 0.92; }
+      .tricolor-on-brand { box-shadow: 0 -3px 0 #FBFAF8; }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="18"
+      data-width="1080"
+      data-height="1080"
+    >
+      <!-- S1 HOOK 0-2.5 -->
+      <section id="s1" class="clip" data-start="0" data-duration="2.5" data-track-index="0">
+        <div class="center hook-bg">
+          <div id="s1-title" class="hook-title">¿CONSTRUISTE<br />ALGO EN<br />COLOMBIA?</div>
+          <div id="s1-sub" class="hook-sub">Entonces esto es para ti</div>
+          <div id="s1-bar" class="hook-bar"></div>
+        </div>
+      </section>
+
+      <!-- S2 VITRINA 2.5-6 -->
+      <section id="s2" class="clip" data-start="2.5" data-duration="3.5" data-track-index="1">
+        <div class="center light-bg">
+          <img id="s2-logo" class="logo" src="assets/logo_H_colombia_colorido.webp" alt="Colombia Hunt — logotipo" />
+          <div id="s2-title" class="big">Tu proyecto<br />merece vitrina<span class="dot">.</span></div>
+          <p id="s2-sub" class="sub">Software, desarrollo y tecnología hechos en Colombia: descubre proyectos y conoce a sus creadores.</p>
+        </div>
+      </section>
+
+      <!-- S3 COLOMBIA DEV 6-10 -->
+      <section id="s3" class="clip" data-start="6" data-duration="4" data-track-index="2">
+        <div class="center brand-bg">
+          <div id="s3-title" class="on-brand-title">Aquí encontrarás los mejores proyectos tecnológicos de <span class="co">Colombia</span>.</div>
+          <p id="s3-sub" class="on-brand-sub">Colombia es país de desarrollo. Talento colombiano que construye software para el mundo.</p>
+        </div>
+        <div class="tricolor tricolor-on-brand" aria-hidden="true"><span></span><span></span><span></span></div>
+      </section>
+
+      <!-- S4 COMO 10-14 -->
+      <section id="s4" class="clip" data-start="10" data-duration="4" data-track-index="3">
+        <div class="center light-bg">
+          <div id="s4-eyebrow" class="eyebrow">Publicar toma minutos</div>
+          <div class="steps">
+            <div id="s4-a" class="step"><b>1</b><strong>Crea tu cuenta</strong><span>Inicia sesión gratis</span></div>
+            <div id="s4-b" class="step"><b>2</b><strong>Publica</strong><span>Cuenta qué construyes</span></div>
+            <div id="s4-c" class="step"><b>3</b><strong>Despega</strong><span>La comunidad te descubre</span></div>
+          </div>
+          <div id="s4-cta" class="cta-pill">Crear un proyecto</div>
+        </div>
+      </section>
+
+      <!-- S5 CIERRE CTA 14-18 -->
+      <section id="s5" class="clip" data-start="14" data-duration="4" data-track-index="4">
+        <div class="center brand-bg">
+          <img id="s5-logo" class="logo-sm" src="assets/logo_H_colombia_blanco.webp" alt="Colombia Hunt — logotipo" />
+          <div id="s5-title" class="cta-pill">Sube tu proyecto hoy</div>
+          <div id="s5-url" class="url">colombiahunt.co/proyectos/nuevo</div>
+          <div id="s5-sub" class="final-sub">Colombia Hunt — proyectos tecnológicos de Colombia.</div>
+        </div>
+        <div class="tricolor tricolor-on-brand" aria-hidden="true"><span></span><span></span><span></span></div>
+      </section>
+    </div>
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+      // S1 hook explosivo
+      tl.fromTo("#s1-title", { scale: 0.7, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.45, ease: "back.out(1.6)" }, 0);
+      tl.fromTo("#s1-sub", { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.4, ease: "power3.out" }, 0.5);
+      tl.fromTo("#s1-bar", { scaleX: 0 }, { scaleX: 1, duration: 0.5, ease: "power3.out" }, 0.7);
+      tl.to("#s1", { scale: 1.06, duration: 0.6, ease: "power2.in" }, 1.9);
+      // S2 vitrina
+      tl.fromTo("#s2-logo", { y: -40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: "power3.out" }, 2.5);
+      tl.fromTo("#s2-title", { y: 60, opacity: 0 }, { y: 0, opacity: 1, duration: 0.55, ease: "power3.out" }, 2.75);
+      tl.fromTo("#s2-sub", { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: "power2.out" }, 3.1);
+      // S3 colombia dev
+      tl.fromTo("#s3-title", { y: 70, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6, ease: "power3.out" }, 6);
+      tl.fromTo("#s3-sub", { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: "power2.out" }, 6.4);
+      // S4 pasos
+      tl.fromTo("#s4-eyebrow", { y: 24, opacity: 0 }, { y: 0, opacity: 1, duration: 0.4, ease: "power2.out" }, 10);
+      tl.fromTo("#s4-a", { y: 60, opacity: 0 }, { y: 0, opacity: 1, duration: 0.4, ease: "power3.out" }, 10.25);
+      tl.fromTo("#s4-b", { y: 60, opacity: 0 }, { y: 0, opacity: 1, duration: 0.4, ease: "power3.out" }, 10.55);
+      tl.fromTo("#s4-c", { y: 60, opacity: 0 }, { y: 0, opacity: 1, duration: 0.4, ease: "power3.out" }, 10.85);
+      tl.fromTo("#s4-cta", { scale: 0.85, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.45, ease: "back.out(1.5)" }, 11.4);
+      // S5 cierre
+      tl.fromTo("#s5-logo", { y: -30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.45, ease: "power3.out" }, 14);
+      tl.fromTo("#s5-title", { scale: 0.8, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.5, ease: "back.out(1.5)" }, 14.3);
+      tl.fromTo("#s5-url", { y: 26, opacity: 0 }, { y: 0, opacity: 1, duration: 0.45, ease: "power2.out" }, 14.7);
+      tl.fromTo("#s5-sub", { opacity: 0 }, { opacity: 1, duration: 0.5 }, 15.1);
+      tl.to("#s5-title", { scale: 1.05, duration: 0.5, yoyo: true, repeat: 3, ease: "power1.inOut" }, 15.6);
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>

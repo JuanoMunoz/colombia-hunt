@@ -55,7 +55,11 @@ export default async function PublicProfilePage({ params }: PublicProfilePagePro
     ]);
     if (!profile) notFound();
 
-    const projects = await getProjects({ creatorId: profile.userId, limit: 50 });
+    const projects = await getProjects({
+        creatorId: profile.userId,
+        limit: 50,
+        viewerId: session?.user?.id,
+    });
     const countLabel =
         projects.length === 1 ? "1 proyecto publicado" : `${projects.length} proyectos publicados`;
 
@@ -161,6 +165,8 @@ export default async function PublicProfilePage({ params }: PublicProfilePagePro
                                 <ProjectCard
                                     project={project}
                                     hasSession={Boolean(session?.user)}
+                                    initialLiked={project.likedByMe}
+                                    initialFavorited={project.favoritedByMe}
                                 />
                             </li>
                         ))}

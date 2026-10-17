@@ -62,10 +62,14 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
     const id = parseCategoryId(rawId);
     if (!id) notFound();
 
-    const [category, initialPage, session] = await Promise.all([
+    const session = await getSession();
+    const [category, initialPage] = await Promise.all([
         getCategoryById(id),
-        getProjectsPage({ categoryId: id, limit: 12 }),
-        getSession(),
+        getProjectsPage({
+            categoryId: id,
+            limit: 12,
+            viewerId: session?.user?.id,
+        }),
     ]);
     if (!category?.translations.es) notFound();
 

@@ -45,15 +45,25 @@ function GoogleIcon() {
 
 // Botones sociales compartidos por /iniciar-sesion y /registrarse.
 // Requiere OAuth configurado en `app/lib/auth.ts` + db del usuario.
-export default function SocialAuthButtons({ callbackURL }: { callbackURL: string }) {
+// Con `requireConsent`, tras volver del proveedor se pasa por /consentimiento.
+export default function SocialAuthButtons({
+  callbackURL,
+  requireConsent = false,
+}: {
+  callbackURL: string;
+  requireConsent?: boolean;
+}) {
   const { lang } = useLanguage();
   const t = getDict(lang);
   const [pending, setPending] = useState<Provider | null>(null);
 
   const login = async (provider: Provider) => {
     setPending(provider);
+    const target = requireConsent
+      ? `/consentimiento?next=${encodeURIComponent(callbackURL)}`
+      : callbackURL;
     try {
-      await signIn.social({ provider, callbackURL });
+      await signIn.social({ provider, callbackURL: target });
     } finally {
       setPending(null);
     }

@@ -128,3 +128,49 @@ export const projectLikes = sqliteTable(
     },
     (t) => [primaryKey({ columns: [t.userId, t.projectId] })],
 );
+
+export const projectFavorites = sqliteTable(
+    "project_favorites",
+    {
+        userId: text("user_id").notNull().references(() => user.id, { onDelete: "cascade" }),
+        projectId: integer("project_id").notNull().references(() => projects.id, { onDelete: "cascade" }),
+        createdAt: integer("created_at", { mode: "timestamp" }).notNull().$defaultFn(() => new Date()),
+    },
+    (t) => [primaryKey({ columns: [t.userId, t.projectId] })],
+);
+
+export const projectComments = sqliteTable(
+    "project_comments",
+    {
+        id: integer("id").primaryKey({ autoIncrement: true }),
+        projectId: integer("project_id").notNull().references(() => projects.id, { onDelete: "cascade" }),
+        userId: text("user_id").notNull().references(() => user.id, { onDelete: "cascade" }),
+        content: text("content").notNull(),
+        deleted: integer("deleted", { mode: "boolean" }).notNull().default(false),
+        deletedAt: integer("deleted_at", { mode: "timestamp" }),
+        ...timestamps,
+    },
+    (t) => [index("project_comments_project_idx").on(t.projectId)],
+);
+
+// ---------- Archivos subidos (UploadThing) ----------
+// Registra cada archivo subido por el usuario para poder borrar huérfanos
+// (imagen reemplazada o subida abandonada) solo si son del dueño y no están
+// adjuntos a un proyecto/perfil. Ver `lib/uploadthing-files.ts`.
+export const uploadedFiles = sqliteTable(
+    "uploaded_files",
+    {
+        key: text("key").primaryKey(),
+        url: text("url").notNull(),
+        userId: text("user_id").notNull().references(() => user.id, { onDelete: "cascade" }),
+        projectId: integer("project_id").references(() => projects.id, { onDelete: "set null" }),
+        attached: integer("attached", { mode: "boolean" }).notNull().default(false),
+        createdAt: integer("created_at", { mode: "timestamp" })
+            .notNull()
+            .$defaultFn(() => new Date()),
+    },
+    (t) => [
+        index("uploaded_files_user_idx").on(t.userId),
+        index("uploaded_files_project_idx").on(t.projectId),
+    ],
+);

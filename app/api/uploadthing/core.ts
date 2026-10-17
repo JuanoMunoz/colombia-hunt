@@ -1,4 +1,6 @@
 import { createUploadthing, type FileRouter } from "uploadthing/next";
+import { db } from "@/db";
+import { uploadedFiles } from "@/db/schema";
 import { auth } from "../../lib/auth";
 
 const f = createUploadthing();
@@ -7,6 +9,8 @@ const f = createUploadthing();
  * Router de subida de imágenes (ver `design.md` §4).
  * El cliente ya comprime en lossless antes de subir
  * (`lib/images/compress.ts`); aquí se valida auth + límites.
+ * Además registra el archivo en `uploaded_files` para poder borrar
+ * huérfanos (reemplazo o subida abandonada) en `lib/uploadthing-files.ts`.
  */
 export const uploadRouter = {
     avatarImage: f({
@@ -19,11 +23,17 @@ export const uploadRouter = {
             }
             return { userId: session.user.id };
         })
-        .onUploadComplete(async ({ metadata, file }) => ({
-            uploadedBy: metadata.userId,
-            fileKey: file.key,
-            fileSize: file.size,
-        })),
+        .onUploadComplete(async ({ metadata, file }) => {
+            await db
+                .insert(uploadedFiles)
+                .values({ key: file.key, url: file.url, userId: metadata.userId })
+                .onConflictDoNothing();
+            return {
+                uploadedBy: metadata.userId,
+                fileKey: file.key,
+                fileSize: file.size,
+            };
+        }),
     projectImage: f({
         image: { maxFileSize: "4MB", maxFileCount: 1, minFileCount: 1 },
     })
@@ -34,11 +44,17 @@ export const uploadRouter = {
             }
             return { userId: session.user.id };
         })
-        .onUploadComplete(async ({ metadata, file }) => ({
-            uploadedBy: metadata.userId,
-            fileKey: file.key,
-            fileSize: file.size,
-        })),
+        .onUploadComplete(async ({ metadata, file }) => {
+            await db
+                .insert(uploadedFiles)
+                .values({ key: file.key, url: file.url, userId: metadata.userId })
+                .onConflictDoNothing();
+            return {
+                uploadedBy: metadata.userId,
+                fileKey: file.key,
+                fileSize: file.size,
+            };
+        }),
 } satisfies FileRouter;
 
 export type OurFileRouter = typeof uploadRouter;

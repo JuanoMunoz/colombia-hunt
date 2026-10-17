@@ -31,7 +31,7 @@ export default function RegisterContent({ callbackURL }: { callbackURL: string }
           </Link>
         </p>
       </div>
-      <SocialAuthButtons callbackURL={callbackURL} />
+      <SocialAuthButtons callbackURL={callbackURL} requireConsent />
     </div>
   );
 }

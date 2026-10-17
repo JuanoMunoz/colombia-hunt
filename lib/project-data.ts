@@ -8,6 +8,8 @@ import {
     profiles,
     projectCategories,
     projectCoauthors,
+    projectComments,
+    projectFavorites,
     projectLikes,
     projects,
     user,
@@ -47,6 +49,17 @@ export type ProjectRecord = {
     extraCoauthors: number;
     categories: ProjectCategory[];
     likesCount: number;
+    /** True when the current viewer has liked this project. */
+    likedByMe: boolean;
+    /** True when the current viewer has saved this project as a favorite. */
+    favoritedByMe: boolean;
+};
+
+export type ProjectComment = {
+    id: number;
+    content: string;
+    createdAt: Date;
+    author: { id: string; name: string; image: string | null };
 };
 
 export type ProjectFilters = {
@@ -54,6 +67,10 @@ export type ProjectFilters = {
     categoryId?: number;
     projectId?: number;
     creatorId?: string;
+    /** Restricts results to the projects this user saved as favorites. */
+    favoriteOf?: string;
+    /** Current viewer id, used to resolve `likedByMe`/`favoritedByMe`. */
+    viewerId?: string;
     query?: string;
     limit?: number;
     offset?: number;
@@ -156,6 +173,31 @@ async function getCoauthorsByProject(projectIds: number[]): Promise<Map<number, 
     return byProject;
 }
 
+async function getViewerState(
+    projectIds: number[],
+    viewerId?: string,
+): Promise<{ likedIds: Set<number>; favoritedIds: Set<number> }> {
+    if (!viewerId || projectIds.length === 0) {
+        return { likedIds: new Set(), favoritedIds: new Set() };
+    }
+
+    const [likeRows, favoriteRows] = await Promise.all([
+        db
+            .select({ projectId: projectLikes.projectId })
+            .from(projectLikes)
+            .where(and(eq(projectLikes.userId, viewerId), inArray(projectLikes.projectId, projectIds))),
+        db
+            .select({ projectId: projectFavorites.projectId })
+            .from(projectFavorites)
+            .where(and(eq(projectFavorites.userId, viewerId), inArray(projectFavorites.projectId, projectIds))),
+    ]);
+
+    return {
+        likedIds: new Set(likeRows.map(({ projectId }) => projectId)),
+        favoritedIds: new Set(favoriteRows.map(({ projectId }) => projectId)),
+    };
+}
+
 function resolveCreator(
     creatorName: string,
     links: ProjectProfileLink[],
@@ -202,6 +244,8 @@ export async function getProjects({
     categoryId,
     projectId,
     creatorId,
+    favoriteOf,
+    viewerId,
     query: searchQuery,
     limit = 12,
     offset = 0,
@@ -212,6 +256,15 @@ export async function getProjects({
     if (cityId !== undefined) filters.push(eq(projects.cityId, cityId));
     if (projectId !== undefined) filters.push(eq(projects.id, projectId));
     if (creatorId !== undefined) filters.push(eq(projects.creatorId, creatorId));
+    if (favoriteOf !== undefined) {
+        const favoriteRows = await db
+            .select({ projectId: projectFavorites.projectId })
+            .from(projectFavorites)
+            .where(eq(projectFavorites.userId, favoriteOf));
+        const favoriteIds = [...new Set(favoriteRows.map(({ projectId: id }) => id))];
+        if (favoriteIds.length === 0) return [];
+        filters.push(inArray(projects.id, favoriteIds));
+    }
     const normalizedQuery = searchQuery?.trim();
     if (normalizedQuery) {
         const search = `%${normalizedQuery}%`;
@@ -320,6 +373,8 @@ export async function getProjects({
         likeRows.map(({ projectId, likesCount }) => [projectId, likesCount]),
     );
 
+    const { likedIds, favoritedIds } = await getViewerState(projectIds, viewerId);
+
     const result: ProjectRecord[] = rows.map((row) => {
         const coauthors = coauthorsByProject.get(row.id) ?? [];
         const { creator, extraCoauthors } = resolveCreator(row.creatorName, creatorLinks(row), coauthors);
@@ -341,6 +396,8 @@ export async function getProjects({
             extraCoauthors,
             categories: categoriesByProject.get(row.id) ?? [],
             likesCount: likesByProject.get(row.id) ?? 0,
+            likedByMe: likedIds.has(row.id),
+            favoritedByMe: favoritedIds.has(row.id),
         };
     });
 
@@ -436,6 +493,8 @@ export async function getOwnProjects(creatorId: string): Promise<OwnProjectRecor
         likeRows.map(({ projectId, likesCount }) => [projectId, likesCount]),
     );
 
+    const { likedIds, favoritedIds } = await getViewerState(projectIds, creatorId);
+
     return rows.map((row) => {
         const coauthors = coauthorsByProject.get(row.id) ?? [];
         const { creator, extraCoauthors } = resolveCreator(row.creatorName, creatorLinks(row), coauthors);
@@ -459,8 +518,37 @@ export async function getOwnProjects(creatorId: string): Promise<OwnProjectRecor
             extraCoauthors,
             categories: categoriesByProject.get(row.id) ?? [],
             likesCount: likesByProject.get(row.id) ?? 0,
+            likedByMe: likedIds.has(row.id),
+            favoritedByMe: favoritedIds.has(row.id),
         };
     });
+}
+
+export async function getFavoriteProjects(viewerId: string): Promise<ProjectRecord[]> {
+    return getProjects({ favoriteOf: viewerId, viewerId, limit: 50 });
+}
+
+export async function getProjectComments(projectId: number): Promise<ProjectComment[]> {
+    const rows = await db
+        .select({
+            id: projectComments.id,
+            content: projectComments.content,
+            createdAt: projectComments.createdAt,
+            authorId: user.id,
+            authorName: user.name,
+            authorImage: user.image,
+        })
+        .from(projectComments)
+        .innerJoin(user, eq(projectComments.userId, user.id))
+        .where(and(eq(projectComments.projectId, projectId), eq(projectComments.deleted, false)))
+        .orderBy(desc(projectComments.createdAt));
+
+    return rows.map((row) => ({
+        id: row.id,
+        content: row.content,
+        createdAt: row.createdAt,
+        author: { id: row.authorId, name: row.authorName, image: row.authorImage },
+    }));
 }
 
 /** Convenience wrapper that also returns hasMore for paginated API responses. */
@@ -474,8 +562,11 @@ export async function getProjectsPage(
     return { items: rows, hasMore };
 }
 
-export async function getProjectById(id: number): Promise<ProjectRecord | null> {
-    const [project] = await getProjects({ projectId: id, limit: 1 });
+export async function getProjectById(
+    id: number,
+    viewerId?: string,
+): Promise<ProjectRecord | null> {
+    const [project] = await getProjects({ projectId: id, viewerId, limit: 1 });
     return project ?? null;
 }
 

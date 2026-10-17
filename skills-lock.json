@@ -7,6 +7,12 @@
       "skillPath": "skills/antislop-ui/SKILL.md",
       "computedHash": "12c2cd7d1d5fbae9210410eb16230332747e9414fc06129200ac13ee174909b6"
     },
+    "hyperframes": {
+      "source": "heygen-com/hyperframes",
+      "sourceType": "github",
+      "skillPath": "skills/hyperframes/SKILL.md",
+      "computedHash": "04c7577109c62b0de2fda5fcf4e578e908d3e0e7c9435d2587c8325fe0bc6006"
+    },
     "laws-of-ux": {
       "source": "rolemodel/rolemodel-skills",
       "sourceType": "github",

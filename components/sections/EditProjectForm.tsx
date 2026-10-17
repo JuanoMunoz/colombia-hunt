@@ -10,6 +10,7 @@ import { compressImage } from "../../lib/images/compress";
 import { useUploadThing } from "../../lib/uploadthing";
 import MarkdownEditor from "../ui/MarkdownEditor";
 import OptimizedImage from "../ui/OptimizedImage";
+import { useUploadCleanup } from "../ui/use-upload-cleanup";
 
 type ProjectOption = {
     id: number;
@@ -52,6 +53,7 @@ export default function EditProjectForm({
         kind: "idle" | "uploading" | "error";
         progress: number | null;
     }>({ kind: "idle", progress: null });
+    const { replaceUpload, markSaved } = useUploadCleanup();
 
     const { startUpload, isUploading } = useUploadThing("projectImage", {
         onClientUploadComplete: (files) => {
@@ -60,6 +62,7 @@ export default function EditProjectForm({
                 setImageUpload({ kind: "error", progress: null });
                 return;
             }
+            replaceUpload(uploadedFile.key);
             setImageUrl(uploadedFile.url);
             setImageUpload({ kind: "idle", progress: null });
         },
@@ -105,6 +108,7 @@ export default function EditProjectForm({
             if (!Number.isSafeInteger(result.projectId) || result.projectId < 1) {
                 throw new Error("La respuesta del servidor no incluye un identificador válido.");
             }
+            markSaved();
             router.push(`/proyectos/${result.projectId}?actualizado=1`);
         } catch (error) {
             if (error instanceof HttpClientError && error.status === 401) {

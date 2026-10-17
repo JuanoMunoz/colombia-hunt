@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { eq } from "drizzle-orm";
 import ProjectDetails from "../../../components/sections/ProjectDetails";
-import { getProjectById } from "../../../lib/project-data";
+import { getProjectById, getProjectComments } from "../../../lib/project-data";
 import { getSession } from "../../lib/get-session";
+import { db } from "@/db";
+import { profiles } from "@/db/schema";
 
 export const dynamic = "force-dynamic";
 
@@ -65,11 +68,29 @@ export default async function ProjectPage({ params, searchParams }: ProjectPageP
   const id = parseProjectId(rawId);
   if (!id) notFound();
 
-  const [project, session] = await Promise.all([
-    getProjectById(id),
-    getSession(),
+  const session = await getSession();
+  const viewerId = session?.user?.id;
+
+  const [project, comments, profile] = await Promise.all([
+    getProjectById(id, viewerId),
+    getProjectComments(id),
+    viewerId
+      ? db
+        .select({ role: profiles.role })
+        .from(profiles)
+        .where(eq(profiles.userId, viewerId))
+        .limit(1)
+      : Promise.resolve([]),
   ]);
   if (!project) notFound();
+
+  const isAdmin = profile[0]?.role === "admin";
+  const commentItems = comments.map((comment) => ({
+    id: comment.id,
+    content: comment.content,
+    createdAt: comment.createdAt.toISOString(),
+    author: comment.author,
+  }));
 
   const projectJsonLd = {
     "@context": "https://schema.org",
@@ -111,6 +132,11 @@ export default async function ProjectPage({ params, searchParams }: ProjectPageP
         created={creado === "1"}
         updated={actualizado === "1"}
         hasSession={Boolean(session?.user)}
+        initialLiked={project.likedByMe}
+        initialFavorited={project.favoritedByMe}
+        comments={commentItems}
+        currentUserId={viewerId}
+        isAdmin={isAdmin}
       />
     </>
   );

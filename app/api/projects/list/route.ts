@@ -1,4 +1,6 @@
+import { headers } from "next/headers";
 import { getProjectsPage } from "../../../../lib/project-data";
+import { auth } from "../../../lib/auth";
 import { rateLimit, getClientIp, rateLimitExceeded } from "../../_lib/rate-limit";
 
 const PAGE_SIZE = 12;
@@ -29,17 +31,20 @@ export async function handleProjectsList(request: Request) {
   const cityId = rawCity ? parseInt(rawCity, 10) || undefined : undefined;
   const query = rawQuery?.trim() || undefined;
 
+  const session = await auth.api.getSession({ headers: await headers() });
+
   const page = await getProjectsPage({
     offset,
     limit,
     categoryId: Number.isFinite(categoryId) ? categoryId : undefined,
     cityId: Number.isFinite(cityId) ? cityId : undefined,
     query,
+    viewerId: session?.user?.id,
   });
 
   return Response.json(page, {
     headers: {
-      "Cache-Control": "public, s-maxage=30, stale-while-revalidate=60",
+      "Cache-Control": "private, no-store",
       "X-RateLimit-Limit": String(RL_LIMIT),
       "X-RateLimit-Remaining": String(remaining),
       "X-RateLimit-Reset": String(Math.ceil(resetMs / 1000)),

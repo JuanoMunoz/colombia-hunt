@@ -264,6 +264,8 @@ export default function ProjectsSection({
                 key={project.id}
                 project={project}
                 hasSession={hasSession}
+                initialLiked={project.likedByMe}
+                initialFavorited={project.favoritedByMe}
               />
             ))}
           </div>
