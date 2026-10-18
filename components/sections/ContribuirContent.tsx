@@ -4,6 +4,9 @@ import Link from "next/link";
 import { getDict } from "../../app/i18n/dictionaries";
 import { useLanguage } from "../../app/i18n/LanguageContext";
 import FaqAccordion from "../ui/FaqAccordion";
+import { GitHubIcon } from "../ui/icons";
+
+const REPO_URL = "https://github.com/JuanoMunoz/colombia-hunt";
 
 const FAQ_ES = [
   {
@@ -203,6 +206,15 @@ export default function ContribuirContent() {
           >
             {lang === "es" ? "Ver proyectos" : "Browse projects"}
           </Link>
+          <a
+            href={REPO_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex min-h-11 w-fit items-center gap-2 rounded-full px-4 text-sm font-semibold text-(--brand) transition-colors hover:bg-(--brand)/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--brand)"
+          >
+            <GitHubIcon aria-hidden="true" className="h-5 w-5" />
+            {lang === "es" ? "Ver el repositorio" : "View the repository"}
+          </a>
         </div>
 
         {/* FAQ */}

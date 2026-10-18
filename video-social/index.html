@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="es" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1080, height=1920">
+    <title>Colombia Hunt — promo 9:16</title>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      @font-face { font-family: 'Lexend'; src: url('assets/fonts/lexend-latin-400-normal.woff2') format('woff2'); font-weight: 400; font-display: swap; }
+      @font-face { font-family: 'Lexend'; src: url('assets/fonts/lexend-latin-700-normal.woff2') format('woff2'); font-weight: 700; font-display: swap; }
+      @font-face { font-family: 'Lexend'; src: url('assets/fonts/lexend-latin-800-normal.woff2') format('woff2'); font-weight: 800; font-display: swap; }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body {
+        margin: 0; width: 1080px; height: 1920px; overflow: hidden;
+        background: #003087;
+        font-family: Lexend, Arial, Helvetica, sans-serif;
+      }
+      #root { width: 100%; height: 100%; position: relative; overflow: hidden; }
+      .clip { position: absolute; inset: 0; overflow: hidden; }
+      .bg-brand { background: #003087; }
+
+      /* --- Escenas de app (vídeo real) --- */
+      .scene { position: absolute; inset: 0; overflow: hidden; }
+      .scene video { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+      /* --- Rótulos sobre el vídeo --- */
+      .caption { position: absolute; inset: 0; }
+      .cap-scrim {
+        position: absolute; left: 0; right: 0; bottom: 0; height: 920px;
+        background: linear-gradient(to top,
+          rgba(0, 48, 135, 1) 0%,
+          rgba(0, 48, 135, 0.97) 42%,
+          rgba(0, 48, 135, 0.72) 72%,
+          rgba(0, 48, 135, 0) 100%);
+      }
+      .cap-inner {
+        position: absolute; left: 0; right: 0; bottom: 0;
+        padding: 0 72px 148px; display: flex; flex-direction: column; gap: 16px;
+      }
+      .cap-eyebrow {
+        color: #FFCD00; font-weight: 700; font-size: 34px;
+        letter-spacing: 0.16em; text-transform: uppercase;
+      }
+      .cap-title {
+        color: #FBFAF8; font-weight: 800; font-size: 72px;
+        line-height: 1.06; letter-spacing: -0.02em; max-width: 940px;
+      }
+      .cap-title .bandera { color: #FFCD00; }
+
+      /* --- Gancho (tarjeta marca) --- */
+      .center {
+        position: absolute; inset: 0; display: flex; flex-direction: column;
+        align-items: center; justify-content: center; text-align: center; padding: 96px 84px;
+      }
+      .hook-title {
+        color: #FBFAF8; font-weight: 800; font-size: 104px;
+        line-height: 1.03; letter-spacing: -0.025em;
+      }
+      .hook-title .bandera { color: #FFCD00; }
+      .hook-sub {
+        margin-top: 34px; color: #FBFAF8; font-weight: 400;
+        font-size: 42px; line-height: 1.4; max-width: 860px; opacity: 0.92;
+      }
+      .hook-bar { margin-top: 46px; width: 460px; height: 14px; background: #FFCD00; border-radius: 999px; }
+      .logo-hook { width: 300px; height: auto; margin-bottom: 56px; }
+      .logo-sm { width: 380px; height: auto; }
+
+      .cta-pill {
+        margin-top: 46px; background: #FFCD00; color: #1A1C1E;
+        font-weight: 800; font-size: 54px; padding: 30px 66px; border-radius: 999px;
+      }
+      .url { margin-top: 34px; color: #FBFAF8; font-size: 42px; font-weight: 700; }
+      .final-sub { margin-top: 20px; color: #FBFAF8; font-size: 34px; opacity: 0.9; }
+
+      .png-wrap {
+        position: absolute; left: 0; right: 0; top: 0; bottom: 420px;
+        display: flex; align-items: center; justify-content: center;
+      }
+      .shot {
+        width: 920px; height: auto; border-radius: 28px;
+        border: 12px solid #FBFAF8; box-shadow: 0 44px 100px rgba(0, 0, 0, 0.5);
+      }
+
+      .tricolor { position: absolute; left: 0; right: 0; bottom: 0; height: 26px; display: flex; }
+      .tricolor span:nth-child(1) { flex: 1; background: #FFCD00; }
+      .tricolor span:nth-child(2) { flex: 1; background: #003087; }
+      .tricolor span:nth-child(3) { flex: 1; background: #931621; }
+    </style>
+  </head>
+  <body>
+    <div data-hf-id="hf-dluy" id="root" data-composition-id="main" data-start="0" data-duration="28" data-width="1080" data-height="1920">
+      <div data-hf-id="hf-0thu" class="bg-brand" style="position:absolute;inset:0;"></div>
+
+      <!-- S2 LOGIN 3-6 -->
+      <div data-hf-id="hf-tklm" class="scene" id="sc2">
+        <video data-hf-id="hf-f8ir" id="v2" src="assets/clips/login.mp4" muted playsinline data-start="3" data-duration="3" data-media-start="0.6" data-track-index="1"></video>
+        <div data-hf-id="hf-4ayk" id="cap2" class="caption clip" data-start="3" data-duration="3" data-track-index="11">
+          <div data-hf-id="hf-ci3d" class="cap-scrim"></div>
+          <div data-hf-id="hf-rtdf" class="cap-inner">
+            <div data-hf-id="hf-1lu7" id="c2-e" class="cap-eyebrow">Crea tu cuenta</div>
+            <div data-hf-id="hf-ozqt" id="c2-t" class="cap-title">Entra en segundos y hazte visible.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- S3 PROYECTOS 6-11 -->
+      <div data-hf-id="hf-zqbf" class="scene" id="sc3">
+        <video data-hf-id="hf-1y8u" id="v3" src="assets/clips/proyectos.mp4" muted playsinline data-start="6" data-duration="5" data-media-start="0.8" data-track-index="1"></video>
+        <div data-hf-id="hf-dax1" id="cap3" class="caption clip" data-start="6" data-duration="5" data-track-index="12">
+          <div data-hf-id="hf-ogh9" class="cap-scrim"></div>
+          <div data-hf-id="hf-m5lf" class="cap-inner">
+            <div data-hf-id="hf-k1ln" id="c3-e" class="cap-eyebrow">Explora</div>
+            <div data-hf-id="hf-6ceu" id="c3-t" class="cap-title">Descubre proyectos hechos en <span data-hf-id="hf-df5s" class="bandera">Colombia</span>.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- S4 DETALLE 11-15.5 -->
+      <div data-hf-id="hf-c8tw" class="scene" id="sc4">
+        <video data-hf-id="hf-5dbo" id="v4" src="assets/clips/detalle.mp4" muted playsinline data-start="11" data-duration="4.5" data-media-start="0.6" data-track-index="1"></video>
+        <div data-hf-id="hf-u0vf" id="cap4" class="caption clip" data-start="11" data-duration="4.5" data-track-index="13">
+          <div data-hf-id="hf-pnec" class="cap-scrim"></div>
+          <div data-hf-id="hf-lrae" class="cap-inner">
+            <div data-hf-id="hf-a2k6" id="c4-e" class="cap-eyebrow">Conoce</div>
+            <div data-hf-id="hf-j8cj" id="c4-t" class="cap-title">El detalle y la historia de cada proyecto.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- S5 COMENTARIOS 15.5-19 -->
+      <div data-hf-id="hf-d0hp" class="scene" id="sc5">
+        <video data-hf-id="hf-gal0" id="v5" src="assets/clips/comentarios.mp4" muted playsinline data-start="15.5" data-duration="3.5" data-media-start="4.4" data-track-index="1"></video>
+        <div data-hf-id="hf-yo7h" id="cap5" class="caption clip" data-start="15.5" data-duration="3.5" data-track-index="14">
+          <div data-hf-id="hf-p93b" class="cap-scrim"></div>
+          <div data-hf-id="hf-lczd" class="cap-inner">
+            <div data-hf-id="hf-2vss" id="c5-e" class="cap-eyebrow">Comunidad</div>
+            <div data-hf-id="hf-5qqn" id="c5-t" class="cap-title">Lee, comenta y conecta con creadores.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- S6 PERFIL / FAVORITOS 19-23 -->
+      <div data-hf-id="hf-et6k" class="scene" id="sc6" style="background:#003087;">
+        <div data-hf-id="hf-n0t0" class="png-wrap" id="png6" data-layout-allow-overflow="">
+          <img data-hf-id="hf-zgbs" id="perfil-shot" class="shot" src="assets/screen-favoritos.png" alt="Sección de favoritos en el perfil de Colombia Hunt" data-start="19" data-duration="4" data-track-index="1">
+        </div>
+        <div data-hf-id="hf-oslg" id="cap6" class="caption clip" data-start="19" data-duration="4" data-track-index="15">
+          <div data-hf-id="hf-qg0e" class="cap-scrim"></div>
+          <div data-hf-id="hf-kyoc" class="cap-inner">
+            <div data-hf-id="hf-02d5" id="c6-e" class="cap-eyebrow">Guarda</div>
+            <div data-hf-id="hf-8r8v" id="c6-t" class="cap-title">Tus favoritos, siempre a mano.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- S1 GANCHO 0-3 -->
+      <section data-hf-id="hf-d5lc" id="s1" class="clip center" data-start="0" data-duration="3" data-track-index="20" style="background:#003087;">
+        <img data-hf-id="hf-gz95" id="hook-logo" class="logo-hook" src="assets/logo_H_colombia_blanco.webp" alt="Colombia Hunt">
+        <div data-hf-id="hf-8nlk" id="s1-title" class="hook-title">¿Tienes un proyecto colombiano que merece ser visto<span data-hf-id="hf-1piz" class="bandera">?</span></div>
+        <div data-hf-id="hf-5jip" id="s1-sub" class="hook-sub">Estás en el lugar correcto.</div>
+        <div data-hf-id="hf-htzn" id="s1-bar" class="hook-bar"></div>
+        <div data-hf-id="hf-suyh" class="tricolor" aria-hidden="true"><span data-hf-id="hf-uckh"></span><span data-hf-id="hf-l73p"></span><span data-hf-id="hf-me0s"></span></div>
+      </section>
+
+      <!-- S7 CIERRE CTA 23-28 -->
+      <section data-hf-id="hf-ide7" id="s7" class="clip" data-start="23" data-duration="5" data-track-index="21" style="background:#003087;">
+        <div data-hf-id="hf-0oij" class="center">
+          <img data-hf-id="hf-9cuh" id="cta-logo" class="logo-sm" src="assets/logo_H_colombia_blanco.webp" alt="Colombia Hunt">
+          <div data-hf-id="hf-xfa4" id="s7-title" class="cta-pill">Sube tu proyecto en Colombia Hunt</div>
+          <div data-hf-id="hf-0cej" id="s7-url" class="url">colombiahunt.co/proyectos/nuevo</div>
+          <div data-hf-id="hf-5hp0" id="s7-sub" class="final-sub">Proyectos tecnológicos de Colombia.</div>
+        </div>
+        <div data-hf-id="hf-tvgt" class="tricolor" aria-hidden="true"><span data-hf-id="hf-lzpr"></span><span data-hf-id="hf-n6mu"></span><span data-hf-id="hf-msbt"></span></div>
+      </section>
+    </div>
+    <script>
+      const tl = gsap.timeline({ paused: true });
+
+      // S1 gancho
+      tl.fromTo("#s1", { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power1.out" }, 0);
+      tl.fromTo(".logo-hook", { y: -30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.45, ease: "power3.out" }, 0);
+      tl.fromTo("#s1-title", { y: 70, opacity: 0 }, { y: 0, opacity: 1, duration: 0.55, ease: "power3.out" }, 0.25);
+      tl.fromTo("#s1-sub", { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.45, ease: "power2.out" }, 0.7);
+      tl.fromTo("#s1-bar", { scaleX: 0 }, { scaleX: 1, duration: 0.55, ease: "power3.out" }, 0.9);
+      tl.to("#s1", { scale: 1.06, duration: 0.55, ease: "power2.in" }, 2.45);
+
+      // S2 login
+      tl.fromTo("#sc2", { opacity: 0 }, { opacity: 1, duration: 0.35, ease: "power1.out" }, 3);
+      tl.fromTo("#c2-e", { y: 26, opacity: 0 }, { y: 0, opacity: 1, duration: 0.4, ease: "power2.out" }, 3.2);
+      tl.fromTo("#c2-t", { y: 46, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: "power3.out" }, 3.45);
+      tl.to("#sc2", { opacity: 0, duration: 0.3, ease: "power1.in" }, 5.7);
+
+      // S3 proyectos
+      tl.fromTo("#sc3", { opacity: 0 }, { opacity: 1, duration: 0.35, ease: "power1.out" }, 6);
+      tl.fromTo("#c3-e", { y: 26, opacity: 0 }, { y: 0, opacity: 1, duration: 0.4, ease: "power2.out" }, 6.2);
+      tl.fromTo("#c3-t", { y: 46, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: "power3.out" }, 6.45);
+      tl.to("#sc3", { opacity: 0, duration: 0.3, ease: "power1.in" }, 10.7);
+
+      // S4 detalle
+      tl.fromTo("#sc4", { opacity: 0 }, { opacity: 1, duration: 0.35, ease: "power1.out" }, 11);
+      tl.fromTo("#c4-e", { y: 26, opacity: 0 }, { y: 0, opacity: 1, duration: 0.4, ease: "power2.out" }, 11.2);
+      tl.fromTo("#c4-t", { y: 46, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: "power3.out" }, 11.45);
+      tl.to("#sc4", { opacity: 0, duration: 0.3, ease: "power1.in" }, 15.2);
+
+      // S5 comentarios
+      tl.fromTo("#sc5", { opacity: 0 }, { opacity: 1, duration: 0.35, ease: "power1.out" }, 15.5);
+      tl.fromTo("#c5-e", { y: 26, opacity: 0 }, { y: 0, opacity: 1, duration: 0.4, ease: "power2.out" }, 15.7);
+      tl.fromTo("#c5-t", { y: 46, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: "power3.out" }, 15.95);
+      tl.to("#sc5", { opacity: 0, duration: 0.3, ease: "power1.in" }, 18.7);
+
+      // S6 perfil / favoritos
+      tl.fromTo("#sc6", { opacity: 0 }, { opacity: 1, duration: 0.35, ease: "power1.out" }, 19);
+      tl.fromTo("#png6", { scale: 1 }, { scale: 1.07, duration: 4, ease: "none" }, 19);
+      tl.fromTo("#c6-e", { y: 26, opacity: 0 }, { y: 0, opacity: 1, duration: 0.4, ease: "power2.out" }, 19.2);
+      tl.fromTo("#c6-t", { y: 46, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: "power3.out" }, 19.45);
+      tl.to("#sc6", { opacity: 0, duration: 0.3, ease: "power1.in" }, 22.7);
+
+      // S7 cierre
+      tl.fromTo("#s7", { opacity: 0 }, { opacity: 1, duration: 0.35, ease: "power1.out" }, 23);
+      tl.fromTo("#s7 .logo-sm", { y: -26, opacity: 0 }, { y: 0, opacity: 1, duration: 0.45, ease: "power3.out" }, 23.2);
+      tl.fromTo("#s7-title", { scale: 0.85, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.5, ease: "back.out(1.5)" }, 23.5);
+      tl.fromTo("#s7-url", { y: 26, opacity: 0 }, { y: 0, opacity: 1, duration: 0.45, ease: "power2.out" }, 23.9);
+      tl.fromTo("#s7-sub", { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "power1.out" }, 24.3);
+      tl.to("#s7-title", { scale: 1.04, duration: 0.55, yoyo: true, repeat: 3, ease: "power1.inOut" }, 24.9);
+
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>

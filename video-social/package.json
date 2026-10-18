@@ -1,0 +1,15 @@
+{
+  "name": "video-launch",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "npx --yes hyperframes@0.8.137 preview",
+    "check": "npx --yes hyperframes@0.8.137 check",
+    "render": "npx --yes hyperframes@0.8.137 render",
+    "publish": "npx --yes hyperframes@0.8.137 publish"
+  },
+  "devDependencies": {
+    "playwright": "1.64.1",
+    "playwright-core": "^1.64.1"
+  }
+}
