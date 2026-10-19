@@ -7,6 +7,7 @@ import { getDict } from "../../app/i18n/dictionaries";
 import { useLanguage } from "../../app/i18n/LanguageContext";
 import { HttpClientError, projectApi, type CreateProjectCoauthorInput } from "../../lib/http-client";
 import { compressImage } from "../../lib/images/compress";
+import { MAX_PROJECT_DESCRIPTION_LENGTH } from "../../lib/project-limits";
 import { useUploadThing } from "../../lib/uploadthing";
 import MarkdownEditor from "../ui/MarkdownEditor";
 import OptimizedImage from "../ui/OptimizedImage";
@@ -132,6 +133,15 @@ export default function CreateProjectForm({
             return;
         }
 
+        const descriptionValue = String(formData.get("description") ?? "");
+        if (descriptionValue.trim().length > MAX_PROJECT_DESCRIPTION_LENGTH) {
+            setStatus({
+                kind: "error",
+                message: t.createProjectDescriptionTooLong(MAX_PROJECT_DESCRIPTION_LENGTH),
+            });
+            return;
+        }
+
         const payloadCoauthors: CreateProjectCoauthorInput[] = coauthors
             .filter((coauthor) => coauthor.name.trim().length > 0)
             .map((coauthor) => ({
@@ -149,7 +159,7 @@ export default function CreateProjectForm({
         try {
             const result = await projectApi.create({
                 title: String(formData.get("title") ?? ""),
-                description: String(formData.get("description") ?? ""),
+                description: descriptionValue,
                 cityId: Number(formData.get("cityId")),
                 categoryIds,
                 imageUrl,
@@ -166,7 +176,7 @@ export default function CreateProjectForm({
             if (error instanceof HttpClientError && error.status === 401) {
                 setStatus({ kind: "error", message: t.createProjectSessionExpired });
             } else if (error instanceof HttpClientError && error.status === 400) {
-                setStatus({ kind: "error", message: t.createProjectInvalid });
+                setStatus({ kind: "error", message: error.message || t.createProjectInvalid });
             } else if (error instanceof Error) {
                 setStatus({ kind: "error", message: t.createProjectError });
             } else {
@@ -245,7 +255,7 @@ export default function CreateProjectForm({
                         hint={lang === "es"
                             ? "Usa Markdown para dar formato: **negrita**, _cursiva_, listas, código…"
                             : "Use Markdown to format: **bold**, _italic_, lists, code…"}
-                        maxLength={10000}
+                        maxLength={MAX_PROJECT_DESCRIPTION_LENGTH}
                         required
                     />
 

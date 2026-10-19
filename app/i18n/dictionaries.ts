@@ -186,6 +186,7 @@ export type Dict = {
   createProjectSubmitting: string;
   createProjectEmptyCatalog: string;
   createProjectInvalid: string;
+  createProjectDescriptionTooLong: (max: number) => string;
   createProjectSessionExpired: string;
   createProjectError: string;
   createProjectCreated: string;
@@ -438,6 +439,8 @@ const es: Dict = {
   createProjectEmptyCatalog:
     "Aún no hay ciudades o categorías disponibles para clasificar proyectos. Vuelve a intentarlo más tarde.",
   createProjectInvalid: "Revisa los datos del proyecto e inténtalo de nuevo.",
+  createProjectDescriptionTooLong: (max) =>
+    `La descripción admite hasta ${new Intl.NumberFormat("es-CO").format(max)} caracteres.`,
   createProjectSessionExpired: "Tu sesión expiró. Inicia sesión y vuelve a intentarlo.",
   createProjectError: "No se pudo publicar el proyecto. Inténtalo de nuevo.",
   createProjectCreated: "Tu proyecto ya está publicado en Colombia Hunt.",
@@ -692,6 +695,8 @@ const en: Dict = {
   createProjectEmptyCatalog:
     "There are no cities or categories available to classify projects yet. Please try again later.",
   createProjectInvalid: "Check the project details and try again.",
+  createProjectDescriptionTooLong: (max) =>
+    `The description can be up to ${new Intl.NumberFormat("en-US").format(max)} characters.`,
   createProjectSessionExpired: "Your session expired. Sign in and try again.",
   createProjectError: "Could not publish the project. Please try again.",
   createProjectCreated: "Your project is now published on Colombia Hunt.",

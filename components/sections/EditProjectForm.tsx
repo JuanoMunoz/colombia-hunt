@@ -7,6 +7,7 @@ import { getDict } from "../../app/i18n/dictionaries";
 import { useLanguage } from "../../app/i18n/LanguageContext";
 import { HttpClientError, projectApi } from "../../lib/http-client";
 import { compressImage } from "../../lib/images/compress";
+import { MAX_PROJECT_DESCRIPTION_LENGTH } from "../../lib/project-limits";
 import { useUploadThing } from "../../lib/uploadthing";
 import MarkdownEditor from "../ui/MarkdownEditor";
 import OptimizedImage from "../ui/OptimizedImage";
@@ -94,11 +95,20 @@ export default function EditProjectForm({
             return;
         }
 
+        const descriptionValue = String(formData.get("description") ?? "");
+        if (descriptionValue.trim().length > MAX_PROJECT_DESCRIPTION_LENGTH) {
+            setStatus({
+                kind: "error",
+                message: t.createProjectDescriptionTooLong(MAX_PROJECT_DESCRIPTION_LENGTH),
+            });
+            return;
+        }
+
         setStatus({ kind: "submitting", message: "" });
         try {
             const result = await projectApi.update(initial.id, {
                 title: String(formData.get("title") ?? ""),
-                description: String(formData.get("description") ?? ""),
+                description: descriptionValue,
                 cityId: Number(formData.get("cityId")),
                 categoryIds,
                 imageUrl,
@@ -114,7 +124,7 @@ export default function EditProjectForm({
             if (error instanceof HttpClientError && error.status === 401) {
                 setStatus({ kind: "error", message: t.editProjectSessionExpired });
             } else if (error instanceof HttpClientError && error.status === 400) {
-                setStatus({ kind: "error", message: t.editProjectInvalid });
+                setStatus({ kind: "error", message: error.message || t.editProjectInvalid });
             } else if (error instanceof Error) {
                 setStatus({ kind: "error", message: t.editProjectError });
             } else {
@@ -175,7 +185,7 @@ export default function EditProjectForm({
                         hint={lang === "es"
                             ? "Usa Markdown para dar formato: **negrita**, _cursiva_, listas, código…"
                             : "Use Markdown to format: **bold**, _italic_, lists, code…"}
-                        maxLength={10000}
+                        maxLength={MAX_PROJECT_DESCRIPTION_LENGTH}
                         required
                     />
 

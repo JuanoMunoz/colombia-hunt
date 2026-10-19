@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import { db } from "@/db";
 import { categories, cities, projectCategories, profiles, projects } from "@/db/schema";
 import { auth } from "../../../lib/auth";
+import { MAX_PROJECT_DESCRIPTION_LENGTH } from "@/lib/project-limits";
 import {
     attachProjectImage,
     deleteOwnedFiles,
@@ -140,9 +141,11 @@ function parseProjectPatch(value: unknown): ProjectPatch {
     if (
         typeof value.description !== "string" ||
         !value.description.trim() ||
-        value.description.trim().length > 2000
+        value.description.trim().length > MAX_PROJECT_DESCRIPTION_LENGTH
     ) {
-        throw new TypeError("La descripción es obligatoria y admite hasta 2000 caracteres.");
+        throw new TypeError(
+            `La descripción es obligatoria y admite hasta ${MAX_PROJECT_DESCRIPTION_LENGTH.toLocaleString("es-CO")} caracteres.`,
+        );
     }
     const cityId = parsePositiveId(value.cityId);
     if (cityId === null) {
